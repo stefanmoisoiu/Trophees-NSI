@@ -20,8 +20,6 @@ class Entity:
     def __init__(self, properties: EntityProperties, position: tuple[int, int] = (0, 0)) -> None:
         self.properties = properties
         self.position = position
-        self.attackShape: tuple[list[str],
-                                tuple[int, int, int], tuple[int, int]] = None
 
     '''Affiche l'entite sur l'ecran'''
 

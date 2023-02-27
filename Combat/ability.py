@@ -7,15 +7,21 @@ import Base.gridManager as gridManager
 
 
 class Ability:
-    def __init__(self, animation: Animation, damageRange: tuple[int, int]):
+    def __init__(self, animation: Animation, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int]) -> None:
         # Damage range: =0,0 no damage, >0,0 damage, <0,0 heal
         self.damageRange = damageRange
         self.animation = animation
+        self.abilitySpeedRange = abilitySpeedRange
 
     '''Retourne les degats de l'attaque en fonction de la range de degats aleatoirement'''
 
     def GetDamage(self) -> int:
         return random.randint(self.damageRange[0], self.damageRange[1])
+
+    '''Retourne la vitesse de l'attaque en fonction de la range de vitesse aleatoirement'''
+
+    def GetSpeed(self) -> int:
+        return random.randint(self.abilitySpeedRange[0], self.abilitySpeedRange[1])
 
     '''Retourne la forme de l'attaque d'un ennemi en fonction de la position du joueur et de la position de l'entite qui attaque'''
 
@@ -38,8 +44,8 @@ class Ability:
 
 
 class MeleeAbility(Ability):
-    def __init__(self, animation: Animation, damageRange: tuple[int, int], shapeUp: list[str], shapeDown: list[str], shapeLeft: list[str], shapeRight: list[str], previewColor: tuple[int, int, int]):
-        super().__init__(animation, damageRange)
+    def __init__(self, animation: Animation, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int], shapeUp: list[str], shapeDown: list[str], shapeLeft: list[str], shapeRight: list[str], previewColor: tuple[int, int, int]):
+        super().__init__(animation, damageRange, abilitySpeedRange)
         self.shapeUp = shapeUp
         self.shapeDown = shapeDown
         self.shapeLeft = shapeLeft
@@ -76,8 +82,8 @@ class MeleeAbility(Ability):
 
 
 class RangedAbility(Ability):
-    def __init__(self, animation: Animation, damageRange: tuple[int, int], zoneShape: list[str], AOEShape: list[str], zoneColor: tuple[int, int, int], AOEColor: tuple[int, int, int]):
-        super().__init__(animation, damageRange)
+    def __init__(self, animation: Animation, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int], zoneShape: list[str], AOEShape: list[str], zoneColor: tuple[int, int, int], AOEColor: tuple[int, int, int]):
+        super().__init__(animation, damageRange, abilitySpeedRange)
         self.zoneShape = zoneShape
         self.AOEShape = AOEShape
         self.zoneColor = zoneColor

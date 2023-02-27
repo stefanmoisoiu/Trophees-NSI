@@ -1,5 +1,6 @@
 import pygame
 import Base.gridManager as gridManager
+import Combat.combatManager as combatManager
 from Base.animation import Animation
 from Base.entity import Entity, EntityProperties
 from Combat.ability import Ability, MeleeAbility, RangedAbility
@@ -35,7 +36,7 @@ __playerMeleeRightShape = ["   ",
                            "   "]
 
 __playerMeleeTestAbility = MeleeAbility(
-    __playerTestAnimation, (3, 0), __playerMeleeUpShape, __playerMeleeDownShape, __playerMeleeLeftShape, __playerMeleeRightShape, (255, 0, 0))
+    __playerTestAnimation, (3, 0), (3, 7), __playerMeleeUpShape, __playerMeleeDownShape, __playerMeleeLeftShape, __playerMeleeRightShape, (255, 0, 0))
 
 __playerRangedZoneShape = ["  FFF  ",
                            " FFFFF ",
@@ -48,18 +49,13 @@ __playerRangedAOEShape = [" F ",
                           "FOF",
                           " F "]
 __playerRangedTestAbility = RangedAbility(
-    __playerTestAnimation, (3, 0), __playerRangedZoneShape, __playerRangedAOEShape, (100, 0, 0), (255, 0, 0))
+    __playerTestAnimation, (3, 0), (3, 7), __playerRangedZoneShape, __playerRangedAOEShape, (100, 0, 0), (255, 0, 0))
 
 __playerProperties = EntityProperties(
     "Player", "The player", [__playerMeleeTestAbility, __playerRangedTestAbility])
 player: Entity = Entity(__playerProperties, position=(8, 8))
 player.properties.animationManager.PlayAnimation(__playerIdleAnimation)
 # endregion
-
-
-def test():
-    print("Finished animation")
-    player.attackShape = None
 
 
 # region Game Loop
@@ -77,8 +73,8 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-            player.properties.animationManager.PlayAnimation(
-                player.properties.abilities[0].animation, test)
+            combatManager.PlayTurns(
+                (player, player.properties.abilities[1]), [])
             # player.attackShape = player.properties.abilities[1].GetPlayerAttackShape(
             #     player.position, mouseGridPos)
 
