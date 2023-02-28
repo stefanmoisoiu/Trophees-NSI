@@ -1,4 +1,4 @@
-from Base.animation import AnimationManager
+from Base.animation import Animation, AnimationManager
 from Combat.ability import Ability
 import Base.gridManager as gridManager
 
@@ -6,10 +6,12 @@ import Base.gridManager as gridManager
 
 
 class EntityProperties:
-    def __init__(self, name: str, description: str, abilities: list[Ability]) -> None:
+    def __init__(self, name: str, description: str, abilities: list[Ability], idleAnimation: Animation) -> None:
         self.name = name
         self.description = description
         self.animationManager = AnimationManager()
+        self.idleAnimation = idleAnimation
+        self.animationManager.PlayAnimation(self.idleAnimation)
         self.abilities = abilities
 
 

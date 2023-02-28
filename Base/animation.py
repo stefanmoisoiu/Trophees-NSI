@@ -38,11 +38,11 @@ class AnimationManager:
         self.currentAnimation: Animation = None
         self.advancement: float = 0.0
 
-    '''Change l'animation qui est en cours de lecture et execute une fonction a la fin de la PREMIERE boucle si elle est specifiee'''
+    '''Change l'animation qui est en cours de lecture et execute des fonctions a un avancement donne dans la PREMIERE boucle si elle est specifiee'''
 
-    def PlayAnimation(self, animation: Animation, onFinishCallback: callable = None) -> None:
+    def PlayAnimation(self, animation: Animation, callbacks: list[tuple[callable, float]] = None) -> None:
         self.currentAnimation = animation
-        self.onFinishCallback = onFinishCallback
+        self.callbacks = callbacks
         self.advancement = 0.0
 
     '''Retourne True si l'animation est finie, False sinon'''
@@ -70,11 +70,14 @@ class AnimationManager:
         if self.currentAnimation is None:
             return
 
-        if self.advancement >= 1.0:
-            if self.onFinishCallback is not None:
-                self.onFinishCallback()
-                self.onFinishCallback = None
+        if self.callbacks is not None and len(self.callbacks) > 0:
+            for callback in self.callbacks:
+                if self.advancement >= callback[1]:
+                    callback[0]()
+                    if self.callbacks is not None:
+                        self.callbacks.remove(callback)
 
+        if self.advancement >= 1:
             if self.currentAnimation.loop:
                 self.advancement = 0.0
             else:

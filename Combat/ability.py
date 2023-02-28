@@ -7,11 +7,12 @@ import Base.gridManager as gridManager
 
 
 class Ability:
-    def __init__(self, animation: Animation, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int]) -> None:
+    def __init__(self, animation: Animation, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int], applyAttackAnimAdvancement: float = 1) -> None:
         # Damage range: =0,0 no damage, >0,0 damage, <0,0 heal
         self.damageRange = damageRange
         self.animation = animation
         self.abilitySpeedRange = abilitySpeedRange
+        self.applyAttackAnimAdvancement = applyAttackAnimAdvancement
 
     '''Retourne les degats de l'attaque en fonction de la range de degats aleatoirement'''
 
@@ -44,8 +45,8 @@ class Ability:
 
 
 class MeleeAbility(Ability):
-    def __init__(self, animation: Animation, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int], shapeUp: list[str], shapeDown: list[str], shapeLeft: list[str], shapeRight: list[str], previewColor: tuple[int, int, int]):
-        super().__init__(animation, damageRange, abilitySpeedRange)
+    def __init__(self, animation: Animation, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int], shapeUp: list[str], shapeDown: list[str], shapeLeft: list[str], shapeRight: list[str], previewColor: tuple[int, int, int], applyAttackAnimAdvancement: float = 1):
+        super().__init__(animation, damageRange, abilitySpeedRange, applyAttackAnimAdvancement)
         self.shapeUp = shapeUp
         self.shapeDown = shapeDown
         self.shapeLeft = shapeLeft
@@ -58,7 +59,9 @@ class MeleeAbility(Ability):
     def GetPlayerAttackShape(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> tuple[list[str], tuple[int, int, int], tuple[int, int]]:
         return self.GetPlayerMeleeAttackShape(playerPosition, mousePositon)
 
-    def GetPlayerMeleeAttackShape(self, playerPosition: tuple[int, int], mouseGridPositon: tuple[int, int]) -> tuple[list[str], tuple[int, int, int]]:
+    """Retourne la forme de l'attaque melee d'un joueur en fonction de la position du joueur et de la position de la souris"""
+
+    def GetPlayerMeleeAttackShape(self, playerPosition: tuple[int, int], mouseGridPositon: tuple[int, int]) -> tuple[list[str], tuple[int, int, int], tuple[int, int]]:
         direction = [mouseGridPositon[0] - playerPosition[0],
                      -(mouseGridPositon[1] - playerPosition[1])]
 
@@ -82,8 +85,8 @@ class MeleeAbility(Ability):
 
 
 class RangedAbility(Ability):
-    def __init__(self, animation: Animation, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int], zoneShape: list[str], AOEShape: list[str], zoneColor: tuple[int, int, int], AOEColor: tuple[int, int, int]):
-        super().__init__(animation, damageRange, abilitySpeedRange)
+    def __init__(self, animation: Animation, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int], zoneShape: list[str], AOEShape: list[str], zoneColor: tuple[int, int, int], AOEColor: tuple[int, int, int], applyAttackAnimAdvancement: float = 1):
+        super().__init__(animation, damageRange, abilitySpeedRange, applyAttackAnimAdvancement)
         self.zoneShape = zoneShape
         self.AOEShape = AOEShape
         self.zoneColor = zoneColor
@@ -94,6 +97,8 @@ class RangedAbility(Ability):
 
     def GetPlayerAttackShape(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> tuple[list[str], tuple[int, int, int], tuple[int, int]]:
         return self.GetPlayerAOEShape(playerPosition, mousePositon)
+
+    """Retourne la forme de l'AOE de l'attaque d'un joueur en fonction de la position du joueur et de la position de la souris"""
 
     def GetPlayerAOEShape(self, playerPosition: tuple[int, int], mouseGridPositon: tuple[int, int]) -> tuple[list[str], tuple[int, int, int], tuple[int, int]]:
         # get closest AOE position to mouse in zone
