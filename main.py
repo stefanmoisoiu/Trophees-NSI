@@ -1,3 +1,5 @@
+from Combat.playerAbilitiesUI import PlayerAbilitiesUI
+from UI.button import Button
 import pygame
 import Base.gridManager as gridManager
 import Combat.combatManager as combatManager
@@ -16,7 +18,32 @@ framerate: int = 60
 clock = pygame.time.Clock()
 # endregion
 
+
+# temporaire, a remplacer dans combatManager
+def PlayCombatTurnsSetup():
+    if playerAbilitiesUI.currentAbility is None or playerAbilitiesUI.ButtonHovered():
+        return
+    playerAbility = playerAbilitiesUI.currentAbility
+
+    playerAbilityShape = playerAbility.GetPlayerAttackShape(
+        player.position, mouseGridPos)
+    golbinAbilityShape = goblin.properties.abilities[0].GetEnemyAttackShape(
+        goblin.position, player.position)
+    combatManager.PlayTurns(
+        (player, playerAbility, playerAbilityShape), [(goblin, goblin.properties.abilities[0], golbinAbilityShape)])
+
 # region Player Setup : A DEPLACER DANS UN FICHIER DE CONFIGURATION AVEC LES DIFFERENTES CLASSES DU JOUEUR + LES ARMES ET LES ITEMS QU'ON PEUT OBTENIR
+
+
+# region Melee Buttons
+swordAttackIdleImage = pygame.image.load(
+    "Sprites/Abilities/Player/Sword/sword_icon.png")
+swordAttackHoverImage = pygame.image.load(
+    "Sprites/Abilities/Player/Sword/sword_icon_hover.png")
+swordAttackClickImage = pygame.image.load(
+    "Sprites/Abilities/Player/Sword/sword_icon_click.png")
+# endregion
+
 __playerIdleAnimation = Animation(pygame.image.load(
     "Sprites/Entities/Player/player test sprite.png"), loop=True, length=.25, horizontalFrames=4, verticalFrames=1)
 __playerTestAnimation = Animation(pygame.image.load(
@@ -37,7 +64,17 @@ __playerMeleeRightShape = ["   ",
                            "   "]
 
 __playerMeleeTestAbility = MeleeAbility(
-    __playerTestAnimation, (3, 0), (3, 7), __playerMeleeUpShape, __playerMeleeDownShape, __playerMeleeLeftShape, __playerMeleeRightShape, (255, 0, 0), .5)
+    __playerTestAnimation, (3, 0), (3, 7), __playerMeleeUpShape, __playerMeleeDownShape, __playerMeleeLeftShape, __playerMeleeRightShape, (255, 0, 0), .5, swordAttackIdleImage, swordAttackHoverImage, swordAttackClickImage)
+
+# region Ranged Buttons
+rangedAttackIdleImage = pygame.image.load(
+    "Sprites/Abilities/Player/Sword/ranged_icon.png")
+rangedAttackHoverImage = pygame.image.load(
+    "Sprites/Abilities/Player/Sword/ranged_icon_hover.png")
+rangedAttackClickImage = pygame.image.load(
+    "Sprites/Abilities/Player/Sword/ranged_icon_click.png")
+# endregion
+
 
 __playerRangedZoneShape = ["  FFF  ",
                            " FFFFF ",
@@ -50,11 +87,40 @@ __playerRangedAOEShape = [" F ",
                           "FOF",
                           " F "]
 __playerRangedTestAbility = RangedAbility(
-    __playerTestAnimation, (3, 0), (3, 7), __playerRangedZoneShape, __playerRangedAOEShape, (100, 0, 0), (255, 0, 0), .5)
+    __playerTestAnimation, (3, 0), (1, 6), __playerRangedZoneShape, __playerRangedAOEShape, (100, 0, 0), (255, 0, 0), .5, rangedAttackIdleImage, rangedAttackHoverImage, rangedAttackClickImage)
 
 __playerProperties = EntityProperties(
     "Player", "The player", [__playerMeleeTestAbility, __playerRangedTestAbility], __playerIdleAnimation)
 player: Entity = Entity(__playerProperties, position=(8, 8))
+
+playerAbilitiesUI = PlayerAbilitiesUI(player)
+playerAbilitiesUI.GenerateAbilityButtons(screen)
+# endregion
+
+# region Enemy Setup : pareil que pour le joueur, a deplacer dans un fichier de configuration
+__goblinIdleAnimation = Animation(pygame.image.load(
+    "Sprites/Entities/Enemy/goblin_idle.png"), loop=True, length=.3, horizontalFrames=4, verticalFrames=1)
+
+__goblinMeleeUpShape = [" F ",
+                        " F ",
+                        " C "]
+__goblinMeleeDownShape = [" C ",
+                          " F ",
+                          " F "]
+__goblinMeleeLeftShape = ["   ",
+                          "FFC",
+                          "   "]
+__goblinMeleeRightShape = ["   ",
+                           "CFF",
+                           "   "]
+
+__goblinAttackRightAnimation = Animation(pygame.image.load(
+    "Sprites/Entities/Enemy/goblin_attack_right.png"), loop=False, length=.4, horizontalFrames=5, verticalFrames=1)
+__golbinAttackAbility = MeleeAbility(
+    __goblinAttackRightAnimation, (3, 6), (0, 6), __goblinMeleeUpShape, __goblinMeleeDownShape, __goblinMeleeLeftShape, __goblinMeleeRightShape, (255, 0, 0), 1)
+__goblinProperties = EntityProperties(
+    "Goblin", "A goblin", [__golbinAttackAbility], __goblinIdleAnimation)
+goblin: Entity = Entity(__goblinProperties, position=(14, 14))
 # endregion
 
 # region Game Loop
@@ -67,15 +133,8 @@ def QuitGame():
     print("Quit game")
 
 
-def PlayTurnsSetup():
-    playerAbilityShape = player.properties.abilities[1].GetPlayerAttackShape(
-        player.position, mouseGridPos)
-    combatManager.PlayTurns(
-        (player, player.properties.abilities[1], playerAbilityShape), [])
-
-
 events.onQuit.append(QuitGame)
-events.onLeftClick.append(PlayTurnsSetup)
+events.onLeftClick.append(PlayCombatTurnsSetup)
 
 while running:
     # region Setup:Events,variables,etc...
@@ -90,20 +149,20 @@ while running:
 
 # region Shapes
     if not combatManager.playingTurns:
-        for attackPreviewShape in player.properties.abilities[1].GetPlayerPreviewShapes(
-                player.position, mouseGridPos):
-            gridManager.AddShape(
-                attackPreviewShape[0], attackPreviewShape[1], attackPreviewShape[2])
-
-    if combatManager.turnShape != None:
-        gridManager.AddShape(
-            combatManager.turnShape[0], combatManager.turnShape[1], combatManager.turnShape[2])
+        playerAbilitiesUI.AddPreviewAbilityShape(mouseGridPos)
+    combatManager.AddTurnShapes()
 
     gridManager.DrawCells(screen)
 # endregion
 # region Entities
+    goblin.Update(deltaTime)
+    goblin.Display(screen)
+
     player.Update(deltaTime)
     player.Display(screen)
+
+    playerAbilitiesUI.Update()
+    playerAbilitiesUI.Display(screen)
 # endregion
     pygame.display.flip()
 # endregion
