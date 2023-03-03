@@ -9,11 +9,15 @@ import Base.gridManager as gridManager
 
 
 class Ability:
-    def __init__(self, animation: Animation, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int], applyAttackAnimAdvancement: float = 1,
-                 idleAbilityIcon: pygame.Surface = None, hoverAbilityIcon: pygame.Surface = None, clickedAbilityIcon: pygame.Surface = None) -> None:
+    def __init__(self, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int], upAnimation: Animation, downAnimation: Animation, leftAnimation: Animation, rightAnimation: Animation,
+                 applyAttackAnimAdvancement: float = 1, idleAbilityIcon: pygame.Surface = None, hoverAbilityIcon: pygame.Surface = None, clickedAbilityIcon: pygame.Surface = None) -> None:
         # Damage range: =0,0 no damage, >0,0 damage, <0,0 heal
+        self.upAnimation = upAnimation
+        self.downAnimation = downAnimation
+        self.leftAnimation = leftAnimation
+        self.rightAnimation = rightAnimation
+
         self.damageRange = damageRange
-        self.animation = animation
         self.abilitySpeedRange = abilitySpeedRange
         self.applyAttackAnimAdvancement = applyAttackAnimAdvancement
         self.idleAbilityIcon = idleAbilityIcon
@@ -32,95 +36,105 @@ class Ability:
 
     '''Retourne la forme de l'attaque d'un ennemi en fonction de la position du joueur et de la position de l'entite qui attaque'''
 
-    def GetEnemyAttackShape(self, enemyPositon: tuple[int, int], playerPosition: tuple[int, int]) -> tuple[list[str], tuple[int, int, int], tuple[int, int]]:
+    def GetEnemyAttackShape(self, enemyPositon: tuple[int, int], playerPosition: tuple[int, int]) -> gridManager.GridShape:
         print("To be implemented in child class")
 
     '''Retourne les formes de la previsualisation de l'attaque d'un joueur en fonction de la position du joueur et de la position de la souris'''
 
     # list[tuple[shape, color, position]]
-    def GetPlayerPreviewShapes(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> list[tuple[list[str], tuple[int, int, int], tuple[int, int]]]:
+    def GetPlayerPreviewShapes(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> list[gridManager.GridShape]:
         print("To be implemented in child class")
 
     '''Retourne la forme de l'attaque d'un joueur en fonction de la position du joueur et de la position de la souris'''
 
-    def GetPlayerAttackShape(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> tuple[list[str], tuple[int, int, int], tuple[int, int]]:
+    def GetPlayerAttackShape(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> gridManager.GridShape:
         print("To be implemented in child class")
+
+    def GetAbilityDirection(self, targetPosition: tuple[int, int], position: tuple[int, int]) -> str:
+        direction = [targetPosition[0] - position[0],
+                     -(targetPosition[1] - position[1])]
+        return gridManager.GetGridDirection(direction)
+
+    def GetAnimation(self, direction: str) -> Animation:
+        print(direction)
+        if direction == "UP":
+            return self.upAnimation
+        elif direction == "DOWN":
+            return self.downAnimation
+        elif direction == "LEFT":
+            return self.leftAnimation
+        elif direction == "RIGHT":
+            return self.rightAnimation
 
 
 '''Classe qui permet de gérer une attaque au corps a corps: il y a 4 directions possibles'''
 
 
 class MeleeAbility(Ability):
-    def __init__(self, animation: Animation, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int],
+    def __init__(self, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int],
+                 upAnimation: Animation, downAnimation: Animation, leftAnimation: Animation, rightAnimation: Animation,
                  shapeUp: list[str], shapeDown: list[str], shapeLeft: list[str], shapeRight: list[str],
-                 previewColor: tuple[int, int, int], applyAttackAnimAdvancement: float = 1,
+                 shapeColor: tuple[int, int, int], applyAttackAnimAdvancement: float = 1,
                  idleAbilityIcon: pygame.Surface = None, hoverAbilityIcon: pygame.Surface = None, clickedAbilityIcon: pygame.Surface = None):
-        super().__init__(animation, damageRange, abilitySpeedRange,
+        super().__init__(damageRange, abilitySpeedRange, upAnimation, downAnimation, leftAnimation, rightAnimation,
                          applyAttackAnimAdvancement, idleAbilityIcon, hoverAbilityIcon, clickedAbilityIcon)
         self.shapeUp = shapeUp
         self.shapeDown = shapeDown
         self.shapeLeft = shapeLeft
         self.shapeRight = shapeRight
-        self.previewColor = previewColor
+        self.shapeColor = shapeColor
 
-    def GetPlayerPreviewShapes(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> list[tuple[list[str], tuple[int, int, int], tuple[int, int]]]:
+    def GetPlayerPreviewShapes(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> list[gridManager.GridShape]:
         return [self.GetMeleeAttackShape(playerPosition, mousePositon)]
 
-    def GetPlayerAttackShape(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> tuple[list[str], tuple[int, int, int], tuple[int, int]]:
+    def GetPlayerAttackShape(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> gridManager.GridShape:
         return self.GetMeleeAttackShape(playerPosition, mousePositon)
 
-    def GetEnemyAttackShape(self, enemyPositon: tuple[int, int], playerPosition: tuple[int, int]) -> tuple[list[str], tuple[int, int, int], tuple[int, int]]:
+    def GetEnemyAttackShape(self, enemyPositon: tuple[int, int], playerPosition: tuple[int, int]) -> gridManager.GridShape:
         return self.GetMeleeAttackShape(enemyPositon, playerPosition)
 
-    """Retourne la forme de l'attaque melee d'un joueur en fonction de la position du joueur et de la position de la souris"""
+    def GetMeleeAttackShape(self, position: tuple[int, int], targetPosition: tuple[int, int]) -> gridManager.GridShape:
 
-    def GetMeleeAttackShape(self, position: tuple[int, int], targetPosition: tuple[int, int]) -> tuple[list[str], tuple[int, int, int], tuple[int, int]]:
-        direction = [targetPosition[0] - position[0],
-                     -(targetPosition[1] - position[1])]
+        strDir = self.GetAbilityDirection(targetPosition, position)
 
-        if direction[0] >= 0:
-            if direction[1] >= direction[0]:
-                return (self.shapeUp, self.previewColor, position)
-            elif direction[1] <= -direction[0]:
-                return (self.shapeDown, self.previewColor, position)
-            else:
-                return (self.shapeRight, self.previewColor, position)
-        else:
-            if direction[1] >= -direction[0]:
-                return (self.shapeUp, self.previewColor, position)
-            elif direction[1] <= direction[0]:
-                return (self.shapeDown, self.previewColor, position)
-            else:
-                return (self.shapeLeft, self.previewColor, position)
+        if strDir == "UP":
+            return gridManager.GridShape(self.shapeUp, self.shapeColor, position)
+        elif strDir == "DOWN":
+            return gridManager.GridShape(self.shapeDown, self.shapeColor, position)
+        elif strDir == "LEFT":
+            return gridManager.GridShape(self.shapeLeft, self.shapeColor, position)
+        elif strDir == "RIGHT":
+            return gridManager.GridShape(self.shapeRight, self.shapeColor, position)
 
 
 '''Classe qui permet de gérer une attaque a distance: il y a la zone ou l'entite peut attaquer et l'AOE (Area of effect) de l'attaque'''
 
 
 class RangedAbility(Ability):
-    def __init__(self, animation: Animation, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int],
-                 zoneShape: list[str], AOEShape: list[str],
-                 zoneColor: tuple[int, int, int], AOEColor: tuple[int, int, int], applyAttackAnimAdvancement: float = 1,
+    def __init__(self, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int],
+                 upAnimation: Animation, downAnimation: Animation, leftAnimation: Animation, rightAnimation: Animation,
+                 zoneShape: list[str], AOEShape: list[str], zoneColor: tuple[int, int, int], AOEColor: tuple[int, int, int],
+                 applyAttackAnimAdvancement: float = 1,
                  idleAbilityIcon: pygame.Surface = None, hoverAbilityIcon: pygame.Surface = None, clickedAbilityIcon: pygame.Surface = None):
-        super().__init__(animation, damageRange, abilitySpeedRange,
+        super().__init__(damageRange, abilitySpeedRange, upAnimation, downAnimation, leftAnimation, rightAnimation,
                          applyAttackAnimAdvancement, idleAbilityIcon, hoverAbilityIcon, clickedAbilityIcon)
         self.zoneShape = zoneShape
         self.AOEShape = AOEShape
         self.zoneColor = zoneColor
         self.AOEColor = AOEColor
 
-    def GetPlayerPreviewShapes(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> list[tuple[list[str], tuple[int, int, int], tuple[int, int]]]:
-        return [(self.zoneShape, self.zoneColor, playerPosition), self.GetPlayerAOEShape(playerPosition, mousePositon)]
+    def GetPlayerPreviewShapes(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> list[gridManager.GridShape]:
+        return [gridManager.GridShape(self.zoneShape, self.zoneColor, playerPosition), self.GetPlayerAOEShape(playerPosition, mousePositon)]
 
-    def GetPlayerAttackShape(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> tuple[list[str], tuple[int, int, int], tuple[int, int]]:
+    def GetPlayerAttackShape(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> gridManager.GridShape:
         return self.GetPlayerAOEShape(playerPosition, mousePositon)
 
-    def GetEnemyAttackShape(self, enemyPositon: tuple[int, int], playerPosition: tuple[int, int]) -> tuple[list[str], tuple[int, int, int], tuple[int, int]]:
+    def GetEnemyAttackShape(self, enemyPositon: tuple[int, int], playerPosition: tuple[int, int]) -> gridManager.GridShape:
         return self.GetPlayerAOEShape(enemyPositon, playerPosition)
 
     """Retourne la forme de l'AOE de l'attaque d'un joueur en fonction de la position du joueur et de la position de la souris"""
 
-    def GetPlayerAOEShape(self, position: tuple[int, int], targetPosition: tuple[int, int]) -> tuple[list[str], tuple[int, int, int], tuple[int, int]]:
+    def GetPlayerAOEShape(self, position: tuple[int, int], targetPosition: tuple[int, int]) -> gridManager.GridShape:
         # get closest AOE position to mouse in zone
         zonePositons = gridManager.GetShapePositions(
             self.zoneShape, position)
@@ -134,4 +148,4 @@ class RangedAbility(Ability):
             if distanceNorm < smallestDistanceNorm:
                 smallestDistanceNorm = distanceNorm
                 closestPositonIndex = i
-        return (self.AOEShape, self.AOEColor, zonePositons[closestPositonIndex])
+        return gridManager.GridShape(self.AOEShape, self.AOEColor, zonePositons[closestPositonIndex])

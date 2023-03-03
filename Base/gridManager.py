@@ -1,17 +1,47 @@
 import math
 import pygame
 
-gridOutlineSprite = pygame.image.load("Sprites/Grid/Grid Outline.png")
-gridCellSprite = pygame.image.load("Sprites/Grid/Grid Cell.png")
-gridPixelSize = 32
+gridPixelSize = 64
+gridOutlineSprite = pygame.transform.scale(
+    pygame.image.load("Sprites/Grid/Grid Outline.png"),
+    (gridPixelSize, gridPixelSize))
+
+gridCellSprite = pygame.transform.scale(pygame.image.load(
+    "Sprites/Grid/Grid Cell.png"), (gridPixelSize, gridPixelSize))
 
 cellsToAdd: list[tuple[tuple[int, int], tuple[int, int, int]]] = []
+
+
+class GridShape:
+    def __init__(self, shape: list[str], color: tuple[int, int, int], position: tuple[int, int] = (0, 0)) -> None:
+        self.shape = shape
+        self.color = color
+        self.position = position
+
 
 '''Retourne la position transformee en coordonnees de la grille'''
 
 
 def GetGridPosition(position: tuple[int, int]) -> tuple[int, int]:
     return (math.floor(position[0] / gridPixelSize), math.floor(position[1] / gridPixelSize))
+
+
+def GetGridDirection(direction: tuple[int, int]) -> str:
+
+    if direction[0] >= 0:
+        if direction[1] >= direction[0]:
+            return "UP"
+        elif direction[1] <= -direction[0]:
+            return "DOWN"
+        else:
+            return "RIGHT"
+    else:
+        if direction[1] >= -direction[0]:
+            return "UP"
+        elif direction[1] <= direction[0]:
+            return "DOWN"
+        else:
+            return "LEFT"
 
 
 '''Retourne la position transformee en coordonnees du monde'''
@@ -57,17 +87,18 @@ def GetShapePositions(shape: list[str], gridOffset: tuple[int, int] = (0, 0)) ->
 '''Ajoute une forme a la liste des cellules a ajouter. La forme est une liste de strings, chaque string represente une ligne de la forme. Chaque caractere de la string represente un pixel de la forme. Les caracteres possibles sont: F = filled grid cell, C = center of the shape, O = filled center of the shape.'''
 
 
-def AddShape(shape: list[str], color: tuple[int, int, int], gridOffset: tuple[int, int] = (0, 0)):
+def AddShape(shape: GridShape):
     global cellsToAdd
     # example shape:
     # shape = ["FFF",
     #          "FCF",
     #          "FFF"]
 
-    cellPositions: list[tuple[int, int]] = GetShapePositions(shape, gridOffset)
+    cellPositions: list[tuple[int, int]] = GetShapePositions(
+        shape.shape, shape.position)
 
     for cellPosition in cellPositions:
-        cellsToAdd.append((cellPosition, color))
+        cellsToAdd.append((cellPosition, shape.color))
 
 
 '''Affiche les cellules a ajouter sur l'ecran'''

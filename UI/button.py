@@ -11,7 +11,8 @@ class Button:
         self.action = action
         self.actionArgs = actionArgs
         self.image = self.idleImage
-        self.rect = self.image.get_rect()
+        print(f"{idleImage}  {__name__}")
+        self.rect = idleImage.get_rect()
         self.rect.topleft = self.position
         events.onLeftClick.append(self.OnClickEvent)
 
@@ -25,6 +26,7 @@ class Button:
         return self.rect.collidepoint(mousePos)
 
     def Update(self):
+        self.rect.topleft = self.position
         if self.MouseHovered():
             if pygame.mouse.get_pressed()[0]:
                 self.image = self.clickImage

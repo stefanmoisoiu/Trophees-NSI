@@ -1,32 +1,39 @@
 import math
 import pygame
+import Base.gridManager as gridManager
 
 '''Classe qui permet de gérer une animation, ex: marcher, courir, sauter, etc...'''
 
 
 class Animation:
-    def __init__(self, spriteSheet: pygame.Surface, length: float = 1, loop: bool = True, horizontalFrames: int = 1, verticalFrames: int = 1) -> None:
+    def __init__(self, spriteSheet: pygame.Surface, length: float = 1, loop: bool = True, horizontalFrames: int = 1, verticalFrames: int = 1, scale: float = 1.0, topleft: tuple[int, int] = (0, 0)) -> None:
         self.spriteSheet = spriteSheet
         self.horizontalFrames = horizontalFrames
         self.verticalFrames = verticalFrames
         self.loop = loop
         self.length = length
+        self.topleft = topleft
         self.frames = GenerateAnimationFrames(
-            spriteSheet, horizontalFrames, verticalFrames)
+            spriteSheet, horizontalFrames, verticalFrames, scale)
 
 
 '''Decoupe le spriteSheet en plusieurs frames et les retourne dans une liste de surfaces'''
 
 
-def GenerateAnimationFrames(spriteSheet: pygame.Surface, horizontalFrames: int, verticalFrames: int) -> list[pygame.Surface]:
+def GenerateAnimationFrames(spriteSheet: pygame.Surface, horizontalFrames: int, verticalFrames: int, scale: float = 1.0) -> list[pygame.Surface]:
     frames = []
     frameWidth = spriteSheet.get_width() / horizontalFrames
     frameHeight = spriteSheet.get_height() / verticalFrames
 
     for i in range(verticalFrames):
         for j in range(horizontalFrames):
-            frames.append(spriteSheet.subsurface(
-                (j/horizontalFrames * spriteSheet.get_width(), i/verticalFrames * spriteSheet.get_height(), frameWidth, frameHeight)))
+
+            frame = spriteSheet.subsurface(
+                (j/horizontalFrames * spriteSheet.get_width(), i/verticalFrames * spriteSheet.get_height(), frameWidth, frameHeight))
+            frame = pygame.transform.scale(
+                frame, (int(frameWidth*scale), int(frameHeight*scale)))
+
+            frames.append(frame)
     return frames
 
 
@@ -62,7 +69,11 @@ class AnimationManager:
             self.advancement * len(self.currentAnimation.frames)), len(self.currentAnimation.frames) - 1)
         frameToDisplay = self.currentAnimation.frames[frameToDisplayIndex]
 
-        screen.blit(frameToDisplay, position)
+        offset = (frameToDisplay.get_width() * self.currentAnimation.topleft[0],
+                  frameToDisplay.get_height() * self.currentAnimation.topleft[1])
+
+        screen.blit(frameToDisplay,
+                    (position[0] - offset[0], position[1] - offset[1]))
 
     '''Met a jour l'animation l'avancee de l'animation en cours de lecture'''
 

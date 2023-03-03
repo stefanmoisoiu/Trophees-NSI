@@ -34,25 +34,31 @@ class PlayerAbilitiesUI:
         print("Ability button clicked.")
         self.currentAbility = ability
 
-    def GenerateAbilityButtons(self, screen: pygame.Surface):
-        self.buttons.clear()
-        abilityCount = len(self.playerEntity.properties.abilities)
+    def UpdateButtonsPosition(self, screen: pygame.Surface):
 
         availableWidth = screen.get_width() - (self.leftRightMargin * 2)
-        if abilityCount > 1:
-            xDistance = availableWidth / (abilityCount-1)
+        if len(self.buttons) > 1:
+            xDistance = availableWidth / (len(self.buttons)-1)
         else:
             xDistance = availableWidth
 
-        for i in range(abilityCount):
+        for i in range(len(self.buttons)):
             buttonSize = self.playerEntity.properties.abilities[i].idleAbilityIcon.get_size(
             )
+            self.buttons[i].position = (i * xDistance + self.leftRightMargin -
+                                        buttonSize[0] / 2, screen.get_height() - self.bottomMargin - buttonSize[1])
+
+    def GenerateAbilityButtons(self):
+        self.buttons.clear()
+
+        for i in range(len(self.playerEntity.properties.abilities)):
+            print(
+                f"AAAAAAAAAAA {self.playerEntity.properties.abilities[i].idleAbilityIcon}")
             self.buttons.append(Button(
                 self.playerEntity.properties.abilities[i].idleAbilityIcon,
                 self.playerEntity.properties.abilities[i].hoverAbilityIcon,
                 self.playerEntity.properties.abilities[i].clickedAbilityIcon,
-                (i * xDistance + self.leftRightMargin -
-                 buttonSize[0] / 2, screen.get_height() - self.bottomMargin - buttonSize[1]),
+                (0, 0),
                 self.OnAbilityButtonClick, self.playerEntity.properties.abilities[i]))
 
     def ButtonHovered(self):
@@ -65,6 +71,7 @@ class PlayerAbilitiesUI:
     def Display(self, screen: pygame.Surface):
         if self.showButtons:
             for i in range(len(self.buttons)):
+                self.UpdateButtonsPosition(screen)
                 self.buttons[i].Display(screen)
 
     def Update(self):
@@ -77,5 +84,4 @@ class PlayerAbilitiesUI:
             return
         for attackPreviewShape in self.currentAbility.GetPlayerPreviewShapes(
                 self.playerEntity.position, mouseGridPos):
-            gridManager.AddShape(
-                attackPreviewShape[0], attackPreviewShape[1], attackPreviewShape[2])
+            gridManager.AddShape(attackPreviewShape)
