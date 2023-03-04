@@ -37,18 +37,27 @@ class Ability:
     '''Retourne la forme de l'attaque d'un ennemi en fonction de la position du joueur et de la position de l'entite qui attaque'''
 
     def GetEnemyAttackShape(self, enemyPositon: tuple[int, int], playerPosition: tuple[int, int]) -> gridManager.GridShape:
-        print("To be implemented in child class")
+        pass
 
     '''Retourne les formes de la previsualisation de l'attaque d'un joueur en fonction de la position du joueur et de la position de la souris'''
 
     # list[tuple[shape, color, position]]
     def GetPlayerPreviewShapes(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> list[gridManager.GridShape]:
-        print("To be implemented in child class")
+        pass
 
     '''Retourne la forme de l'attaque d'un joueur en fonction de la position du joueur et de la position de la souris'''
 
     def GetPlayerAttackShape(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> gridManager.GridShape:
-        print("To be implemented in child class")
+        pass
+
+    def OnAbilityAnimationStarted(self, entity, shape: gridManager.GridShape, direction: str) -> None:
+        pass
+
+    def OnAbilityAnimationEnded(self, entity, shape: gridManager.GridShape, direction: str) -> None:
+        pass
+
+    def OnAbilityAttackApplied(self, entity, shape: gridManager.GridShape, direction: str) -> None:
+        pass
 
     def GetAbilityDirection(self, targetPosition: tuple[int, int], position: tuple[int, int]) -> str:
         direction = [targetPosition[0] - position[0],
@@ -149,3 +158,15 @@ class RangedAbility(Ability):
                 smallestDistanceNorm = distanceNorm
                 closestPositonIndex = i
         return gridManager.GridShape(self.AOEShape, self.AOEColor, zonePositons[closestPositonIndex])
+
+
+class MovementAbility(RangedAbility):
+    def __init__(self, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int], upAnimation: Animation, downAnimation: Animation, leftAnimation: Animation, rightAnimation: Animation, zoneShape: list[str], AOEShape: list[str], zoneColor: tuple[int, int, int], AOEColor: tuple[int, int, int], applyAttackAnimAdvancement: float = 1, idleAbilityIcon: pygame.Surface = None, hoverAbilityIcon: pygame.Surface = None, clickedAbilityIcon: pygame.Surface = None):
+        super().__init__(damageRange, abilitySpeedRange, upAnimation, downAnimation, leftAnimation, rightAnimation, zoneShape,
+                         AOEShape, zoneColor, AOEColor, applyAttackAnimAdvancement, idleAbilityIcon, hoverAbilityIcon, clickedAbilityIcon)
+
+    def OnAbilityAttackApplied(self, entity, shape: gridManager.GridShape, direction: str) -> None:
+        shapePositions = gridManager.GetShapePositions(
+            shape.shape, shape.position + entity.position)
+        newPos = shapePositions[random.randint(0, len(shapePositions)-1)]
+        entity.position = newPos

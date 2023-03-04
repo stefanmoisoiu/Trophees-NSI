@@ -47,6 +47,8 @@ def PlayTurns(playerTurn: tuple[Entity, Ability, gridManager.GridShape, str],
 
 def ApplyTurnDamage():
     print(f"Applying attack by {turnsLeft[-1][0].properties.name}")
+    turnsLeft[-1][1].OnAbilityAttackApplied(
+        turnsLeft[-1][0], turnsLeft[-1][2], turnsLeft[-1][3])
 
 
 '''Execute quand l'animation de l'entite est finie'''
@@ -57,6 +59,8 @@ def FinishedTurnAnimation():
     turnsLeft[-1][0].properties.animationManager.PlayAnimation(
         turnsLeft[-1][0].properties.idleAnimation)
 
+    turnsLeft[-1][1].OnAbilityAnimationEnded(
+        turnsLeft[-1][0], turnsLeft[-1][2], turnsLeft[-1][3])
     turnsLeft.pop()
     PlayNextTurn()
 
@@ -75,7 +79,7 @@ def StopPlayingTurns():
 
 
 def PlayNextTurn():
-    global turnShape
+    global turnsLeft, turnShape
 
     if len(turnsLeft) == 0:
         StopPlayingTurns()
@@ -84,6 +88,9 @@ def PlayNextTurn():
 
     turnsLeft[-1][0].properties.animationManager.PlayAnimation(
         turnsLeft[-1][1].GetAnimation(turnsLeft[-1][3]), [(ApplyTurnDamage, turnsLeft[-1][1].applyAttackAnimAdvancement), (FinishedTurnAnimation, 1)])
+
+    turnsLeft[-1][1].OnAbilityAnimationStarted(
+        turnsLeft[-1][0], turnsLeft[-1][2], turnsLeft[-1][3])
 
 
 def AddTurnShapes():

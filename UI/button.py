@@ -11,7 +11,6 @@ class Button:
         self.action = action
         self.actionArgs = actionArgs
         self.image = self.idleImage
-        print(f"{idleImage}  {__name__}")
         self.rect = idleImage.get_rect()
         self.rect.topleft = self.position
         events.onLeftClick.append(self.OnClickEvent)

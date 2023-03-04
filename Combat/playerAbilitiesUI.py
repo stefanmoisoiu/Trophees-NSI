@@ -52,8 +52,6 @@ class PlayerAbilitiesUI:
         self.buttons.clear()
 
         for i in range(len(self.playerEntity.properties.abilities)):
-            print(
-                f"AAAAAAAAAAA {self.playerEntity.properties.abilities[i].idleAbilityIcon}")
             self.buttons.append(Button(
                 self.playerEntity.properties.abilities[i].idleAbilityIcon,
                 self.playerEntity.properties.abilities[i].hoverAbilityIcon,

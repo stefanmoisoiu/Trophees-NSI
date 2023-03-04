@@ -6,7 +6,7 @@ import Base.gridManager as gridManager
 
 
 class Animation:
-    def __init__(self, spriteSheet: pygame.Surface, length: float = 1, loop: bool = True, horizontalFrames: int = 1, verticalFrames: int = 1, scale: float = 1.0, topleft: tuple[int, int] = (0, 0)) -> None:
+    def __init__(self, spriteSheet: pygame.Surface, length: float = 1, loop: bool = True, horizontalFrames: int = 1, verticalFrames: int = 1, flip: bool = False, scale: float = 1.0, topleft: tuple[int, int] = (0, 0)) -> None:
         self.spriteSheet = spriteSheet
         self.horizontalFrames = horizontalFrames
         self.verticalFrames = verticalFrames
@@ -14,13 +14,13 @@ class Animation:
         self.length = length
         self.topleft = topleft
         self.frames = GenerateAnimationFrames(
-            spriteSheet, horizontalFrames, verticalFrames, scale)
+            spriteSheet, horizontalFrames, verticalFrames, flip, scale)
 
 
 '''Decoupe le spriteSheet en plusieurs frames et les retourne dans une liste de surfaces'''
 
 
-def GenerateAnimationFrames(spriteSheet: pygame.Surface, horizontalFrames: int, verticalFrames: int, scale: float = 1.0) -> list[pygame.Surface]:
+def GenerateAnimationFrames(spriteSheet: pygame.Surface, horizontalFrames: int, verticalFrames: int, flip: bool, scale: float = 1.0) -> list[pygame.Surface]:
     frames = []
     frameWidth = spriteSheet.get_width() / horizontalFrames
     frameHeight = spriteSheet.get_height() / verticalFrames
@@ -32,6 +32,8 @@ def GenerateAnimationFrames(spriteSheet: pygame.Surface, horizontalFrames: int, 
                 (j/horizontalFrames * spriteSheet.get_width(), i/verticalFrames * spriteSheet.get_height(), frameWidth, frameHeight))
             frame = pygame.transform.scale(
                 frame, (int(frameWidth*scale), int(frameHeight*scale)))
+            if flip:
+                frame = pygame.transform.flip(frame, True, False)
 
             frames.append(frame)
     return frames
