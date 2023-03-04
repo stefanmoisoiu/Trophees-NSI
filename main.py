@@ -26,14 +26,14 @@ def PlayCombatTurnsSetup():
     playerAbility = playerAbilitiesUI.currentAbility
 
     playerAbilityDirection = playerAbility.GetAbilityDirection(
-        player.position, mouseGridPos)
+        mouseGridPos, player.position)
     playerAbilityShape = playerAbility.GetPlayerAttackShape(
         player.position, mouseGridPos)
 
     golbinAbilityDirection = goblin.properties.abilities[0].GetAbilityDirection(
         player.position, goblin.position)
-    golbinAbilityShape = goblin.properties.abilities[0].GetPlayerAttackShape(
-        player.position, goblin.position)
+    golbinAbilityShape = goblin.properties.abilities[0].GetEnemyAttackShape(
+        goblin.position, player.position)
     combatManager.PlayTurns(
         (player, playerAbility, playerAbilityShape, playerAbilityDirection), [(goblin, goblin.properties.abilities[0], golbinAbilityShape, golbinAbilityDirection)])
 
@@ -63,18 +63,14 @@ __playerMeleeLeftAnimation = Animation(pygame.image.load(
 __playerMeleeRightAnimation = Animation(pygame.image.load(
     "Sprites/Entities/Player/player_attack_right.png"), loop=False, length=.25, horizontalFrames=5, verticalFrames=1, scale=2, topleft=(.175, .175))
 
-__playerMeleeUpShape = [" F ",
-                        " F ",
-                        " C "]
-__playerMeleeDownShape = [" C ",
-                          " F ",
-                          " F "]
-__playerMeleeLeftShape = ["   ",
-                          "FFC",
-                          "   "]
-__playerMeleeRightShape = ["   ",
-                           "CFF",
-                           "   "]
+__playerMeleeUpShape = ["F",
+                        "F",
+                        "C"]
+__playerMeleeDownShape = ["C",
+                          "F",
+                          "F"]
+__playerMeleeLeftShape = ["FFC"]
+__playerMeleeRightShape = ["CFF"]
 
 __playerMeleeTestAbility = MeleeAbility(damageRange=(3, 0), abilitySpeedRange=(3, 7),
                                         upAnimation=__playerMeleeUpAnimation, downAnimation=__playerMeleeDownAnimation, leftAnimation=__playerMeleeLeftAnimation, rightAnimation=__playerMeleeRightAnimation,
@@ -116,25 +112,27 @@ playerAbilitiesUI.GenerateAbilityButtons()
 
 # region Enemy Setup : pareil que pour le joueur, a deplacer dans un fichier de configuration
 __goblinIdleAnimation = Animation(pygame.image.load(
-    "Sprites/Entities/Enemy/goblin_idle.png"), loop=True, length=.3, horizontalFrames=4, verticalFrames=1, scale=2)
+    "Sprites/Entities/Enemy/goblin_idle.png"), loop=True, length=.3, horizontalFrames=4, verticalFrames=1, scale=2, topleft=(.333, .333))
 
-__goblinMeleeUpShape = ["   ",
-                        " F ",
-                        " C "]
-__goblinMeleeDownShape = [" C ",
-                          " F ",
-                          "   "]
+__goblinMeleeUpShape = [" F ",
+                        " C ",
+                        "   "]
+__goblinMeleeDownShape = ["   ",
+                          " C ",
+                          " F "]
 __goblinMeleeLeftShape = ["   ",
-                          " FC",
+                          "FC ",
                           "   "]
 __goblinMeleeRightShape = ["   ",
-                           "CF ",
+                           " CF",
                            "   "]
 
 __goblinAttackRightAnimation = Animation(pygame.image.load(
-    "Sprites/Entities/Enemy/goblin_attack_right.png"), loop=False, length=.4, horizontalFrames=5, verticalFrames=1, scale=2)
+    "Sprites/Entities/Enemy/goblin_attack_right.png"), loop=False, length=.2, horizontalFrames=7, verticalFrames=1, scale=2, topleft=(.333, .333))
+__goblinAttackLeftAnimation = Animation(pygame.image.load(
+    "Sprites/Entities/Enemy/goblin_attack_left.png"), loop=False, length=.2, horizontalFrames=7, verticalFrames=1, scale=2, topleft=(.333, .333))
 __golbinAttackAbility = MeleeAbility(damageRange=(3, 6), abilitySpeedRange=(0, 6),
-                                     upAnimation=__goblinAttackRightAnimation, downAnimation=__goblinAttackRightAnimation, leftAnimation=__goblinAttackRightAnimation, rightAnimation=__goblinAttackRightAnimation, applyAttackAnimAdvancement=1,
+                                     upAnimation=__goblinAttackRightAnimation, downAnimation=__goblinAttackRightAnimation, leftAnimation=__goblinAttackLeftAnimation, rightAnimation=__goblinAttackRightAnimation, applyAttackAnimAdvancement=1,
                                      shapeUp=__goblinMeleeUpShape, shapeDown=__goblinMeleeDownShape, shapeLeft=__goblinMeleeLeftShape, shapeRight=__goblinMeleeRightShape, shapeColor=(255, 0, 0))
 __goblinProperties = EntityProperties(
     "Goblin", "A goblin", [__golbinAttackAbility], __goblinIdleAnimation)
@@ -165,21 +163,16 @@ while running:
     events.CheckEvents(pygame.event.get())
     # endregion
 
-# region Shapes
-    if not combatManager.playingTurns:
-        playerAbilitiesUI.AddPreviewAbilityShape(mouseGridPos)
-    combatManager.AddTurnShapes()
-
-    gridManager.DrawCells(screen)
-# endregion
 # region Entities
     goblin.Update(deltaTime)
-    goblin.Display(screen)
-
     player.Update(deltaTime)
-    player.Display(screen)
+    playerAbilitiesUI.Update(mouseGridPos)
 
-    playerAbilitiesUI.Update()
+    combatManager.AddTurnShapes()
+    gridManager.DrawCells(screen)
+
+    goblin.Display(screen)
+    player.Display(screen)
     playerAbilitiesUI.Display(screen)
 # endregion
     pygame.display.flip()

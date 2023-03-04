@@ -71,12 +71,12 @@ def DrawGridOutline(screen: pygame.Surface):
 def GetShapePositions(shape: list[str], gridOffset: tuple[int, int] = (0, 0)) -> list[tuple[int, int]]:
     cellPositions: list[tuple[int, int]] = []
     anchorPos: tuple[int, int] = (0, 0)
-    for j in range(len(shape)):
-        for i in range(len(shape[j])):
-            if shape[i][j] in ["F", "O"]:
-                cellPositions.append((j, i))
-            if shape[i][j] in ["C", "O"]:
-                anchorPos = (j, i)
+    for y in range(len(shape)):
+        for x in range(len(shape[y])):
+            if shape[y][x] in ["F", "O"]:
+                cellPositions.append((x, y))
+            if shape[y][x] in ["C", "O"]:
+                anchorPos = (x, y)
 
     for i in range(len(cellPositions)):
         cellPositions[i] = (cellPositions[i][0] - anchorPos[0] + gridOffset[0],

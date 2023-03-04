@@ -74,10 +74,13 @@ class PlayerAbilitiesUI:
                 self.UpdateButtonsPosition(screen)
                 self.buttons[i].Display(screen)
 
-    def Update(self):
+    def Update(self, mouseGridPos: tuple[int, int]):
         if self.showButtons:
             for button in self.buttons:
                 button.Update()
+
+        if not combatManager.playingTurns:
+            self.AddPreviewAbilityShape(mouseGridPos)
 
     def AddPreviewAbilityShape(self, mouseGridPos: tuple[int, int]):
         if self.currentAbility is None:
