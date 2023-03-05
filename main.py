@@ -1,3 +1,4 @@
+import Effects.textPopup as textPopup
 from Combat.playerAbilitiesUI import PlayerAbilitiesUI
 from UI.button import Button
 import pygame
@@ -104,6 +105,7 @@ __playerSideStepTestAbility = MovementAbility(
     zoneShape=__playerSideStepZoneShape, AOEShape=__playerSideStepAOEShape, zoneColor=(0, 0, 100), AOEColor=(0, 0, 255), applyAttackAnimAdvancement=.5,
     idleAbilityIcon=sideStepAttackIdleImage, hoverAbilityIcon=sideStepAttackHoverImage, clickedAbilityIcon=sideStepAttackClickImage)
 
+
 __playerRangedZoneShape = ["  FFF  ",
                            " FFFFF ",
                            "FFFFFFF",
@@ -155,6 +157,10 @@ __goblinProperties = EntityProperties(
     "Goblin", "A goblin", [__golbinAttackAbility], __goblinIdleAnimation)
 goblin: Entity = Entity(__goblinProperties, position=(6, 5))
 # endregion
+popupTexts: list[textPopup.TextPopup] = []
+
+popupTexts.append(textPopup.TextPopup(
+    "0", (64, 64), (64, 32), textPopup.combatSpeedPopup))
 
 # region Game Loop
 running: bool = True
@@ -183,6 +189,11 @@ while running:
 # region Entities
     goblin.Update(deltaTime)
     player.Update(deltaTime)
+    for popup in popupTexts:
+        if not popup.alive:
+            popupTexts.remove(popup)
+        else:
+            popup.Update(deltaTime)
     playerAbilitiesUI.Update(mouseGridPos)
 
     combatManager.AddTurnShapes()
@@ -191,6 +202,8 @@ while running:
     goblin.Display(screen)
     player.Display(screen)
     playerAbilitiesUI.Display(screen)
+    for popup in popupTexts:
+        popup.Display(screen)
 # endregion
     pygame.display.flip()
 # endregion
