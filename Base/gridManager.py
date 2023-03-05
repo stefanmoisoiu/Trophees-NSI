@@ -47,7 +47,7 @@ def GetGridDirection(direction: tuple[int, int]) -> str:
 '''Retourne la position transformee en coordonnees du monde'''
 
 
-def GetWorldPosition(position: tuple[int, int]) -> tuple[int, int]:
+def GetWorldPosition(position: tuple[float, float]) -> tuple[float, float]:
     return (position[0] * gridPixelSize, position[1] * gridPixelSize)
 
 

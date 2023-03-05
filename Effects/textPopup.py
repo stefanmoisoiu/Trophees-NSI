@@ -14,17 +14,22 @@ class TextPopupAdditionalProperties:
 
 
 class TextPopup:
-    def __init__(self, text: str, startPosition: tuple[int, int], endPosition: tuple[int, int], additionalProperties: TextPopupAdditionalProperties):
+    def __init__(self, text: str, startPosition: tuple[int, int], endPosition: tuple[int, int], additionalProperties: TextPopupAdditionalProperties, onPopupEnd: callable = None):
         self.text = text
         self.startPosition = startPosition
         self.endPosition = endPosition
         self.additionalProperties = additionalProperties
-        self.timer = Timer(additionalProperties.duration, self.Die)
+
+        self.timer = Timer(additionalProperties.duration, [self.Die])
+        if onPopupEnd is not None:
+            self.timer.callbacks.append(onPopupEnd)
 
         self.surface = self.additionalProperties.font.render(
             self.text, True, self.additionalProperties.color)
         self.rect = self.surface.get_rect()
         self.rect.center = self.startPosition
+        print(f"TextPopupRECT: {self.rect}")
+
         self.alive = True
 
     def Die(self):
@@ -46,19 +51,26 @@ class TextPopup:
             return
 
         self.timer.Update(deltaTime)
-        offset = ((self.endPosition[0] - self.startPosition[0]) * self.timer.advancement,
-                  (self.endPosition[1] - self.startPosition[1]) * self.timer.advancement)
+        easedAdvancement = math.sin(self.timer.advancement * math.pi/2)
+        offset = ((self.endPosition[0] - self.startPosition[0]) * easedAdvancement,
+                  (self.endPosition[1] - self.startPosition[1]) * easedAdvancement)
         self.rect.center = (
             self.startPosition[0]+offset[0], self.startPosition[1]+offset[1])
 
     def Display(self, screen: pygame.Surface):
         screen.blit(self.SurfaceByAdvancement(
-            self.surface, self.timer.advancement), self.rect.center)
+            self.surface, self.timer.advancement), self.rect.topleft)
 
 
 pygame.init()
 
 normalPopup = TextPopupAdditionalProperties(
     pygame.font.Font("Fonts/Retro Gaming.ttf", 30), (255, 255, 255), 0.5, 1)
-combatSpeedPopup = TextPopupAdditionalProperties(
-    pygame.font.Font("Fonts/Retro Gaming.ttf", 30), (96, 163, 189), 0.5, 2)
+damagePopup = TextPopupAdditionalProperties(
+    pygame.font.Font("Fonts/Retro Gaming.ttf", 30), (255, 0, 0), 0.5, 1)
+healPopup = TextPopupAdditionalProperties(
+    pygame.font.Font("Fonts/Retro Gaming.ttf", 30), (0, 255, 0), 0.5, 1)
+missPopup = TextPopupAdditionalProperties(
+    pygame.font.Font("Fonts/Retro Gaming.ttf", 30), (150, 150, 150), 0.5, 1)
+
+activePopups: list[TextPopup] = []

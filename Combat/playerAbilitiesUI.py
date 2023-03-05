@@ -84,5 +84,5 @@ class PlayerAbilitiesUI:
         if self.currentAbility is None:
             return
         for attackPreviewShape in self.currentAbility.GetPlayerPreviewShapes(
-                self.playerEntity.position, mouseGridPos):
+                self.playerEntity.gridPosition, mouseGridPos):
             gridManager.AddShape(attackPreviewShape)

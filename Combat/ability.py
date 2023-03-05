@@ -9,7 +9,7 @@ import Base.gridManager as gridManager
 
 
 class Ability:
-    def __init__(self, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int], upAnimation: Animation, downAnimation: Animation, leftAnimation: Animation, rightAnimation: Animation,
+    def __init__(self, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int], missChance: float, upAnimation: Animation, downAnimation: Animation, leftAnimation: Animation, rightAnimation: Animation,
                  applyAttackAnimAdvancement: float = 1, idleAbilityIcon: pygame.Surface = None, hoverAbilityIcon: pygame.Surface = None, clickedAbilityIcon: pygame.Surface = None) -> None:
         # Damage range: =0,0 no damage, >0,0 damage, <0,0 heal
         self.upAnimation = upAnimation
@@ -19,6 +19,7 @@ class Ability:
 
         self.damageRange = damageRange
         self.abilitySpeedRange = abilitySpeedRange
+        self.missChance = missChance
         self.applyAttackAnimAdvancement = applyAttackAnimAdvancement
         self.idleAbilityIcon = idleAbilityIcon
         self.hoverAbilityIcon = hoverAbilityIcon
@@ -27,7 +28,11 @@ class Ability:
     '''Retourne les degats de l'attaque en fonction de la range de degats aleatoirement'''
 
     def GetDamage(self) -> int:
+        print(self.damageRange)
         return random.randint(self.damageRange[0], self.damageRange[1])
+
+    def Missed(self) -> bool:
+        return random.random() < self.missChance
 
     '''Retourne la vitesse de l'attaque en fonction de la range de vitesse aleatoirement'''
 
@@ -80,7 +85,7 @@ class Ability:
 
 
 class MeleeAbility(Ability):
-    def __init__(self, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int],
+    def __init__(self, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int], missChance: float,
                  upAnimation: Animation, downAnimation: Animation, leftAnimation: Animation, rightAnimation: Animation,
                  shapeUp: list[str], shapeDown: list[str], shapeLeft: list[str], shapeRight: list[str],
                  shapeColor: tuple[int, int, int], applyAttackAnimAdvancement: float = 1,
@@ -120,12 +125,13 @@ class MeleeAbility(Ability):
 
 
 class RangedAbility(Ability):
-    def __init__(self, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int],
+    def __init__(self, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int], missChance: float,
                  upAnimation: Animation, downAnimation: Animation, leftAnimation: Animation, rightAnimation: Animation,
                  zoneShape: list[str], AOEShape: list[str], zoneColor: tuple[int, int, int], AOEColor: tuple[int, int, int],
                  applyAttackAnimAdvancement: float = 1,
                  idleAbilityIcon: pygame.Surface = None, hoverAbilityIcon: pygame.Surface = None, clickedAbilityIcon: pygame.Surface = None):
-        super().__init__(damageRange, abilitySpeedRange, upAnimation, downAnimation, leftAnimation, rightAnimation,
+
+        super().__init__(damageRange, abilitySpeedRange, missChance, upAnimation, downAnimation, leftAnimation, rightAnimation,
                          applyAttackAnimAdvancement, idleAbilityIcon, hoverAbilityIcon, clickedAbilityIcon)
         self.zoneShape = zoneShape
         self.AOEShape = AOEShape
@@ -161,12 +167,16 @@ class RangedAbility(Ability):
 
 
 class MovementAbility(RangedAbility):
-    def __init__(self, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int], upAnimation: Animation, downAnimation: Animation, leftAnimation: Animation, rightAnimation: Animation, zoneShape: list[str], AOEShape: list[str], zoneColor: tuple[int, int, int], AOEColor: tuple[int, int, int], applyAttackAnimAdvancement: float = 1, idleAbilityIcon: pygame.Surface = None, hoverAbilityIcon: pygame.Surface = None, clickedAbilityIcon: pygame.Surface = None):
-        super().__init__(damageRange, abilitySpeedRange, upAnimation, downAnimation, leftAnimation, rightAnimation, zoneShape,
+    def __init__(self, abilitySpeedRange: tuple[int, int],
+                 upAnimation: Animation, downAnimation: Animation, leftAnimation: Animation, rightAnimation: Animation,
+                 zoneShape: list[str], AOEShape: list[str], zoneColor: tuple[int, int, int], AOEColor: tuple[int, int, int], applyAttackAnimAdvancement: float = 1,
+                 idleAbilityIcon: pygame.Surface = None, hoverAbilityIcon: pygame.Surface = None, clickedAbilityIcon: pygame.Surface = None):
+
+        super().__init__((0, 0), abilitySpeedRange, 0, upAnimation, downAnimation, leftAnimation, rightAnimation, zoneShape,
                          AOEShape, zoneColor, AOEColor, applyAttackAnimAdvancement, idleAbilityIcon, hoverAbilityIcon, clickedAbilityIcon)
 
     def OnAbilityAttackApplied(self, entity, shape: gridManager.GridShape, direction: str) -> None:
         shapePositions = gridManager.GetShapePositions(
-            shape.shape, shape.position + entity.position)
+            shape.shape, shape.position + entity.gridPosition)
         newPos = shapePositions[random.randint(0, len(shapePositions)-1)]
-        entity.position = newPos
+        entity.gridPosition = newPos

@@ -4,12 +4,12 @@
 class Timer:
     '''Constructeur de la classe Timer qui prend en parametre la duree du timer et la fonction a executer'''
 
-    def __init__(self, duration: float, callback: callable, autoStart: bool = True):
+    def __init__(self, duration: float, callbacks: list[callable], autoStart: bool = True):
         self.duration: float = duration
         self.advancement: float = 0.0
         self.timePassed: float = 0.0
         self.timeLeft: float = duration
-        self.callback: callable = callback
+        self.callbacks: list[callable] = callbacks
         self.running: bool = autoStart
 
     def Reset(self):
@@ -37,5 +37,6 @@ class Timer:
         self.timeLeft -= deltaTime
         self.advancement = self.timePassed / self.duration
         if self.advancement >= 1.0:
-            self.callback()
+            for callback in self.callbacks:
+                callback()
             self.Stop()
