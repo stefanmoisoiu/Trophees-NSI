@@ -19,10 +19,11 @@ class GridShape:
         self.position = position
 
 
-'''Retourne la position transformee en coordonnees de la grille'''
+
 
 
 def GetGridPosition(position: tuple[int, int]) -> tuple[int, int]:
+    '''Retourne la position transformee en coordonnees de la grille'''
     return (math.floor(position[0] / gridPixelSize), math.floor(position[1] / gridPixelSize))
 
 
@@ -44,17 +45,19 @@ def GetGridDirection(direction: tuple[int, int]) -> str:
             return "LEFT"
 
 
-'''Retourne la position transformee en coordonnees du monde'''
+
 
 
 def GetWorldPosition(position: tuple[float, float]) -> tuple[float, float]:
+    '''Retourne la position transformee en coordonnees du monde'''
     return (position[0] * gridPixelSize, position[1] * gridPixelSize)
 
 
-'''Affiche la grille des cellules sur l'ecran'''
+
 
 
 def DrawGridOutline(screen: pygame.Surface):
+    '''Affiche la grille des cellules sur l'ecran'''
     # get screen in grid coordinates
     topleft = (math.floor(screen.get_rect().left / gridPixelSize),
                math.floor(screen.get_rect().top / gridPixelSize))
@@ -84,10 +87,12 @@ def GetShapePositions(shape: list[str], gridOffset: tuple[int, int] = (0, 0)) ->
     return cellPositions
 
 
-'''Ajoute une forme a la liste des cellules a ajouter. La forme est une liste de strings, chaque string represente une ligne de la forme. Chaque caractere de la string represente un pixel de la forme. Les caracteres possibles sont: F = filled grid cell, C = center of the shape, O = filled center of the shape.'''
+
 
 
 def AddShape(shape: GridShape):
+    '''Ajoute une forme a la liste des cellules a ajouter. La forme est une liste de strings, chaque string represente une ligne de la forme. Chaque caractere de la string represente un pixel de la forme. Les caracteres possibles sont: F = filled grid cell, C = center of the shape, O = filled center of the shape.'''
+    
     global cellsToAdd
     # example shape:
     # shape = ["FFF",
@@ -101,10 +106,12 @@ def AddShape(shape: GridShape):
         cellsToAdd.append((cellPosition, shape.color))
 
 
-'''Affiche les cellules a ajouter sur l'ecran'''
+
 
 
 def DrawCells(screen: pygame.Surface):
+    '''Affiche les cellules a ajouter sur l'ecran'''
+    
     for cell in cellsToAdd:
         spriteToCreate = gridCellSprite.copy()
         spriteToCreate.fill(cell[1],

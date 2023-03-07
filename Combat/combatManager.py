@@ -64,12 +64,15 @@ def DealDamage(entities: list[Entity], ability: Ability, shape: gridManager.Grid
                     damageToApply, (entity.rect.centerx, entity.rect.top))
 
 
-'''Execute quand le joueur a fini de choisir son attaque'''
+
 
 
 def PlayTurns(entitiesTakingDamage: list[Entity], playerTurn: tuple[Entity, Ability, gridManager.GridShape, str],
               enemyTurns: list[tuple[Entity, Ability, gridManager.GridShape, str]]):
+    '''Execute quand le joueur a fini de choisir son attaque'''
+    
     global turnsLeft, playingTurns, entities
+    
     entities = entitiesTakingDamage.copy()
     sortedTurns = [playerTurn] + enemyTurns
     # sort by speed
@@ -85,20 +88,18 @@ def PlayTurns(entitiesTakingDamage: list[Entity], playerTurn: tuple[Entity, Abil
     PlayNextTurn()
 
 
-'''Execute quand l'attaque est appliquee : peut etre appele pendant l'animation a un avancement donne'''
-
-
 def ApplyTurnDamage():
+    '''Execute quand l'attaque est appliquee : peut etre appele pendant l'animation a un avancement donne'''
+    
     print(f"Applying attack by {turnsLeft[-1][0].properties.name}")
     DealDamage(entities, turnsLeft[-1][1], turnsLeft[-1][2])
     turnsLeft[-1][1].OnAbilityAttackApplied(
         turnsLeft[-1][0], turnsLeft[-1][2], turnsLeft[-1][3])
 
 
-'''Execute quand l'animation de l'entite est finie'''
-
-
 def FinishedTurnAnimation():
+    '''Execute quand l'animation de l'entite est finie'''
+    
     print("Finished animation. Next Turn")
     turnsLeft[-1][0].properties.animationManager.PlayAnimation(
         turnsLeft[-1][0].properties.idleAnimation)
@@ -119,10 +120,10 @@ def StopPlayingTurns():
         callback()
 
 
-'''Joue le tour de l'entite suivante'''
-
 
 def PlayNextTurn():
+    '''Joue le tour de l'entite suivante'''
+    
     global turnsLeft, turnShape
 
     if len(turnsLeft) == 0:
