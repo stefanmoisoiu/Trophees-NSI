@@ -13,7 +13,7 @@ button_start_rect = button_start.get_rect()
 button_start_rect.x = math.ceil(screen.get_width() / 3.33)
 button_start_rect.y = math.ceil(screen.get_width() / 3)
 
-button_setting = pygame.image.load("Sprites/Menu/setting_button.jpg")
+button_setting = pygame.image.load("Sprites/Menu/setting_button.png")
 button_setting = pygame.transform.scale(button_setting, (400, 150))
 button_setting_rect = button_setting.get_rect()
 button_setting_rect.x = math.ceil(screen.get_width() / 3.33)
