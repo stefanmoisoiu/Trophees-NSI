@@ -43,11 +43,11 @@ def PlayCombatTurnsSetup():
 
 # region Melee Buttons
 swordAttackIdleImage = pygame.image.load(
-    "Sprites/Abilities/Player/Sword/sword_icon.png")
+    "Sprites/Abilities/Player/sword_icon.png")
 swordAttackHoverImage = pygame.image.load(
-    "Sprites/Abilities/Player/Sword/sword_icon_hover.png")
+    "Sprites/Abilities/Player/sword_icon_hover.png")
 swordAttackClickImage = pygame.image.load(
-    "Sprites/Abilities/Player/Sword/sword_icon_click.png")
+    "Sprites/Abilities/Player/sword_icon_click.png")
 # endregion
 
 __playerIdleAnimation = Animation(pygame.image.load(
@@ -80,28 +80,27 @@ __playerMeleeTestAbility = MeleeAbility(damageRange=(1, 3), abilitySpeedRange=(3
 
 # region Ranged Buttons
 rangedAttackIdleImage = pygame.image.load(
-    "Sprites/Abilities/Player/Sword/ranged_icon.png")
+    "Sprites/Abilities/Player/ranged_icon.png")
 rangedAttackHoverImage = pygame.image.load(
-    "Sprites/Abilities/Player/Sword/ranged_icon_hover.png")
+    "Sprites/Abilities/Player/ranged_icon_hover.png")
 rangedAttackClickImage = pygame.image.load(
-    "Sprites/Abilities/Player/Sword/ranged_icon_click.png")
+    "Sprites/Abilities/Player/ranged_icon_click.png")
 # endregion
 
 # region Sidestep Buttons
 sideStepAttackIdleImage = pygame.image.load(
-    "Sprites/Abilities/Player/Sword/sidestep_icon.png")
+    "Sprites/Abilities/Player/sidestep_icon.png")
 sideStepAttackHoverImage = pygame.image.load(
-    "Sprites/Abilities/Player/Sword/sidestep_icon_hover.png")
+    "Sprites/Abilities/Player/sidestep_icon_hover.png")
 sideStepAttackClickImage = pygame.image.load(
-    "Sprites/Abilities/Player/Sword/sidestep_icon_click.png")
+    "Sprites/Abilities/Player/sidestep_icon_click.png")
 # endregion
 __playerSideStepZoneShape = [" F ",
                              "FCF",
                              " F "]
-__playerSideStepAOEShape = ["F"]
 __playerSideStepTestAbility = MovementAbility(abilitySpeedRange=(8, 15),
                                               upAnimation=__playerMeleeRightAnimation, downAnimation=__playerMeleeRightAnimation, rightAnimation=__playerMeleeRightAnimation, leftAnimation=__playerMeleeRightAnimation,
-                                              zoneShape=__playerSideStepZoneShape, AOEShape=__playerSideStepAOEShape, zoneColor=(0, 0, 100), AOEColor=(0, 0, 255), applyAttackAnimAdvancement=.5,
+                                              zoneShape=__playerSideStepZoneShape, zoneColor=(0, 0, 100), targetColor=(0, 0, 255), applyAttackAnimAdvancement=.5,
                                               idleAbilityIcon=sideStepAttackIdleImage, hoverAbilityIcon=sideStepAttackHoverImage, clickedAbilityIcon=sideStepAttackClickImage)
 
 
@@ -124,7 +123,7 @@ __playerProperties = EntityProperties(
     "Player", "The player", 15, [__playerMeleeTestAbility, __playerSideStepTestAbility, __playerRangedTestAbility], __playerIdleAnimation)
 player: Entity = Entity(__playerProperties, gridPosition=(4, 4))
 
-playerAbilitiesUI = PlayerAbilitiesUI(player)
+playerAbilitiesUI = PlayerAbilitiesUI(player, 1)
 playerAbilitiesUI.GenerateAbilityButtons()
 # endregion
 
@@ -152,8 +151,20 @@ __goblinAttackLeftAnimation = Animation(pygame.image.load(
 __golbinAttackAbility = MeleeAbility(damageRange=(3, 6), abilitySpeedRange=(0, 6), missChance=.1,
                                      upAnimation=__goblinAttackRightAnimation, downAnimation=__goblinAttackRightAnimation, leftAnimation=__goblinAttackLeftAnimation, rightAnimation=__goblinAttackRightAnimation, applyAttackAnimAdvancement=.7,
                                      shapeUp=__goblinMeleeUpShape, shapeDown=__goblinMeleeDownShape, shapeLeft=__goblinMeleeLeftShape, shapeRight=__goblinMeleeRightShape, shapeColor=(140, 28, 28))
+
+__goblinMoveZoneShape = [" F ",
+                         "FCF",
+                         " F "]
+
+__goblinMoveRightAnimation = Animation(pygame.image.load(
+    "Sprites/Entities/Enemy/goblin_attack_right.png"), loop=False, length=.2, horizontalFrames=7, verticalFrames=1, scale=2, topleft=(.333, .333))
+__goblinMoveLeftAnimation = Animation(pygame.image.load(
+    "Sprites/Entities/Enemy/goblin_attack_right.png"), loop=False, length=.2, horizontalFrames=7, verticalFrames=1, flip=True, scale=2, topleft=(.333, .333))
+__golbinMoveAbility = MovementAbility(abilitySpeedRange=(0, 6),
+                                      upAnimation=__goblinMoveRightAnimation, downAnimation=__goblinMoveRightAnimation, leftAnimation=__goblinMoveLeftAnimation, rightAnimation=__goblinMoveLeftAnimation,
+                                      zoneShape=__goblinMoveZoneShape, zoneColor=(0, 0, 100), targetColor=(0, 0, 255), applyAttackAnimAdvancement=.7)
 __goblinProperties = EntityProperties(
-    "Goblin", "A goblin", 5, [__golbinAttackAbility], __goblinIdleAnimation)
+    "Goblin", "A goblin", 5, [__golbinMoveAbility], __goblinIdleAnimation)
 goblin: Entity = Entity(__goblinProperties, gridPosition=(5, 4))
 # endregion
 

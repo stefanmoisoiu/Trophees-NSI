@@ -165,11 +165,11 @@ class RangedAbility(Ability):
 class MovementAbility(RangedAbility):
     def __init__(self, abilitySpeedRange: tuple[int, int],
                  upAnimation: Animation, downAnimation: Animation, leftAnimation: Animation, rightAnimation: Animation,
-                 zoneShape: list[str], AOEShape: list[str], zoneColor: tuple[int, int, int], AOEColor: tuple[int, int, int], applyAttackAnimAdvancement: float = 1,
+                 zoneShape: list[str], zoneColor: tuple[int, int, int], targetColor: tuple[int, int, int], applyAttackAnimAdvancement: float = 1,
                  idleAbilityIcon: pygame.Surface = None, hoverAbilityIcon: pygame.Surface = None, clickedAbilityIcon: pygame.Surface = None):
 
-        super().__init__((0, 0), abilitySpeedRange, 0, upAnimation, downAnimation, leftAnimation, rightAnimation, zoneShape,
-                         AOEShape, zoneColor, AOEColor, applyAttackAnimAdvancement, idleAbilityIcon, hoverAbilityIcon, clickedAbilityIcon)
+        super().__init__((0, 0), abilitySpeedRange, 0, upAnimation, downAnimation, leftAnimation, rightAnimation, zoneShape, ["F"],
+                         zoneColor, targetColor, applyAttackAnimAdvancement, idleAbilityIcon, hoverAbilityIcon, clickedAbilityIcon)
 
     def OnAbilityAttackApplied(self, entity, shape: gridManager.GridShape, direction: str) -> None:
         shapePositions = gridManager.GetShapePositions(

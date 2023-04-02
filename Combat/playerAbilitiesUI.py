@@ -7,8 +7,9 @@ import Combat.combatManager as combatManager
 
 
 class PlayerAbilitiesUI:
-    def __init__(self, playerEntity: Entity):
+    def __init__(self, playerEntity: Entity, buttonScale: int = 1):
         self.playerEntity = playerEntity
+        self.buttonScale = buttonScale
         self.currentAbility: Ability = None
         self.buttons: list[Button] = []
         self.showButtons: bool = True
@@ -56,7 +57,7 @@ class PlayerAbilitiesUI:
                 self.playerEntity.properties.abilities[i].idleAbilityIcon,
                 self.playerEntity.properties.abilities[i].hoverAbilityIcon,
                 self.playerEntity.properties.abilities[i].clickedAbilityIcon,
-                (0, 0),
+                (0, 0), self.buttonScale,
                 self.OnAbilityButtonClick, self.playerEntity.properties.abilities[i]))
 
     def ButtonHovered(self):

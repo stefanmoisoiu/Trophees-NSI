@@ -3,10 +3,13 @@ import Base.events as events
 
 
 class Button:
-    def __init__(self, idleImage: pygame.Surface, hoverImage: pygame.Surface, clickImage: pygame.Surface, position: tuple[int, int], action: callable = None, *actionArgs):
-        self.idleImage = idleImage
-        self.hoverImage = hoverImage
-        self.clickImage = clickImage
+    def __init__(self, idleImage: pygame.Surface, hoverImage: pygame.Surface, clickImage: pygame.Surface, position: tuple[int, int], imgScale=1, action: callable = None, *actionArgs):
+        self.idleImage = pygame.transform.scale(
+            idleImage, (idleImage.get_width()*imgScale, idleImage.get_height()*imgScale))
+        self.hoverImage = pygame.transform.scale(
+            hoverImage, (hoverImage.get_width()*imgScale, hoverImage.get_height()*imgScale))
+        self.clickImage = pygame.transform.scale(
+            clickImage, (clickImage.get_width()*imgScale, clickImage.get_height()*imgScale))
         self.position = position
         self.action = action
         self.actionArgs = actionArgs
