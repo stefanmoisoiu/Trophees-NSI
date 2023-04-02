@@ -3,11 +3,9 @@ import pygame
 import Base.gridManager as gridManager
 
 
-
-
 class Animation:
     '''Classe qui permet de gérer une animation, ex: marcher, courir, sauter, etc...'''
-    
+
     def __init__(self, spriteSheet: pygame.Surface, length: float = 1, loop: bool = True, horizontalFrames: int = 1, verticalFrames: int = 1, flip: bool = False, scale: float = 1.0, topleft: tuple[int, int] = (0, 0)) -> None:
         self.spriteSheet = spriteSheet
         self.horizontalFrames = horizontalFrames
@@ -19,12 +17,9 @@ class Animation:
             spriteSheet, horizontalFrames, verticalFrames, flip, scale)
 
 
-
-
-
 def GenerateAnimationFrames(spriteSheet: pygame.Surface, horizontalFrames: int, verticalFrames: int, flip: bool, scale: float = 1.0) -> list[pygame.Surface]:
     '''Decoupe le spriteSheet en plusieurs frames et les retourne dans une liste de surfaces'''
-    
+
     frames = []
     frameWidth = spriteSheet.get_width() / horizontalFrames
     frameHeight = spriteSheet.get_height() / verticalFrames
@@ -43,39 +38,30 @@ def GenerateAnimationFrames(spriteSheet: pygame.Surface, horizontalFrames: int, 
     return frames
 
 
-
-
-
 class AnimationManager:
     '''Classe qui permet de gérer toutes animations d'un objet'''
-    
+
     def __init__(self) -> None:
         self.currentAnimation: Animation = None
         self.advancement: float = 0.0
 
-    
-
     def PlayAnimation(self, animation: Animation, callbacks: list[tuple[callable, float]] = None) -> None:
         '''Change l'animation qui est en cours de lecture et execute des fonctions a un avancement donne dans la PREMIERE boucle si elle est specifiee'''
-        
+
         self.currentAnimation = animation
         self.callbacks = callbacks
         self.advancement = 0.0
 
-    
-
     def AnimationFinished(self) -> bool:
         '''Retourne True si l'animation est finie, False sinon'''
-        
+
         return self.currentAnimation is None or (self.advancement >= 1.0 and not self.currentAnimation.loop)
 
     # ------------------------------------------------------------------------------------------------------------------
 
-    
-
     def Display(self, screen, position: tuple[int, int]) -> None:
         '''Affiche l'animation en cours de lecture'''
-        
+
         if self.currentAnimation is None:
             return
 
@@ -89,11 +75,9 @@ class AnimationManager:
         screen.blit(frameToDisplay,
                     (position[0] - offset[0], position[1] - offset[1]))
 
-    
-
     def Update(self, deltaTime: float) -> None:
         '''Met a jour l'animation l'avancee de l'animation en cours de lecture'''
-        
+
         if self.currentAnimation is None:
             return
 

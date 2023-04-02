@@ -5,7 +5,7 @@ import Effects.textPopup as textPopup
 
 entities: list[Entity] = []
 turnsLeft: list[Entity, Ability, gridManager.GridShape, str] = []
-turnShape: gridManager.GridShape = None
+currentTurnShape: gridManager.GridShape = None
 playingTurns: bool = False
 
 onStartPlayingTurns: callable = []
@@ -64,16 +64,13 @@ def DealDamage(entities: list[Entity], ability: Ability, shape: gridManager.Grid
                     damageToApply, (entity.rect.centerx, entity.rect.top))
 
 
-
-
-
-def PlayTurns(entitiesTakingDamage: list[Entity], playerTurn: tuple[Entity, Ability, gridManager.GridShape, str],
+def PlayTurns(entitiesInTurn: list[Entity], playerTurn: tuple[Entity, Ability, gridManager.GridShape, str],
               enemyTurns: list[tuple[Entity, Ability, gridManager.GridShape, str]]):
     '''Execute quand le joueur a fini de choisir son attaque'''
-    
+
     global turnsLeft, playingTurns, entities
-    
-    entities = entitiesTakingDamage.copy()
+
+    entities = entitiesInTurn.copy()
     sortedTurns = [playerTurn] + enemyTurns
     # sort by speed
     sortedTurns.sort(key=lambda entity: entity[1].GetSpeed())
@@ -90,7 +87,7 @@ def PlayTurns(entitiesTakingDamage: list[Entity], playerTurn: tuple[Entity, Abil
 
 def ApplyTurnDamage():
     '''Execute quand l'attaque est appliquee : peut etre appele pendant l'animation a un avancement donne'''
-    
+
     print(f"Applying attack by {turnsLeft[-1][0].properties.name}")
     DealDamage(entities, turnsLeft[-1][1], turnsLeft[-1][2])
     turnsLeft[-1][1].OnAbilityAttackApplied(
@@ -99,7 +96,7 @@ def ApplyTurnDamage():
 
 def FinishedTurnAnimation():
     '''Execute quand l'animation de l'entite est finie'''
-    
+
     print("Finished animation. Next Turn")
     turnsLeft[-1][0].properties.animationManager.PlayAnimation(
         turnsLeft[-1][0].properties.idleAnimation)
@@ -111,25 +108,26 @@ def FinishedTurnAnimation():
 
 
 def StopPlayingTurns():
-    global playingTurns, turnShape
+    global playingTurns, currentTurnShape
 
     playingTurns = False
-    turnShape = None
+    currentTurnShape = None
 
     for callback in onEndPlayingTurns:
         callback()
 
 
-
 def PlayNextTurn():
     '''Joue le tour de l'entite suivante'''
-    
-    global turnsLeft, turnShape
+
+    global turnsLeft, currentTurnShape
 
     if len(turnsLeft) == 0:
         StopPlayingTurns()
         return
-    turnShape = turnsLeft[-1][2]
+    currentTurnShape = turnsLeft[-1][2]
+
+    print(f"ANIM ADVANCEMENTS : {turnsLeft[-1][1].applyAttackAnimAdvancement}")
 
     turnsLeft[-1][0].properties.animationManager.PlayAnimation(
         turnsLeft[-1][1].GetAnimation(turnsLeft[-1][3]), [(ApplyTurnDamage, turnsLeft[-1][1].applyAttackAnimAdvancement), (FinishedTurnAnimation, 1)])
@@ -141,8 +139,8 @@ def PlayNextTurn():
 def AddTurnShapes():
     if not playingTurns:
         return
-    if turnShape is not None:
-        gridManager.AddShape(turnShape)
+    if currentTurnShape is not None:
+        gridManager.AddShape(currentTurnShape)
 
 
 def ResetWaitingForPopupEnd():
