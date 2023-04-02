@@ -73,7 +73,7 @@ __playerMeleeDownShape = ["C",
 __playerMeleeLeftShape = ["FFC"]
 __playerMeleeRightShape = ["CFF"]
 
-__playerMeleeTestAbility = MeleeAbility(damageRange=(0, 3), abilitySpeedRange=(3, 7), missChance=.1,
+__playerMeleeTestAbility = MeleeAbility(damageRange=(1, 3), abilitySpeedRange=(3, 7), missChance=.1,
                                         upAnimation=__playerMeleeUpAnimation, downAnimation=__playerMeleeDownAnimation, leftAnimation=__playerMeleeLeftAnimation, rightAnimation=__playerMeleeRightAnimation,
                                         shapeUp=__playerMeleeUpShape, shapeDown=__playerMeleeDownShape, shapeLeft=__playerMeleeLeftShape, shapeRight=__playerMeleeRightShape, shapeColor=(140, 28, 28), applyAttackAnimAdvancement=.5,
                                         idleAbilityIcon=swordAttackIdleImage, hoverAbilityIcon=swordAttackHoverImage, clickedAbilityIcon=swordAttackClickImage)
@@ -115,7 +115,7 @@ __playerRangedZoneShape = ["  FFF  ",
 __playerRangedAOEShape = [" F ",
                           "FOF",
                           " F "]
-__playerRangedTestAbility = RangedAbility(damageRange=(0, 3), abilitySpeedRange=(1, 6), missChance=.1,
+__playerRangedTestAbility = RangedAbility(damageRange=(1, 3), abilitySpeedRange=(1, 6), missChance=.1,
                                           upAnimation=__playerTestAnimation, downAnimation=__playerTestAnimation, leftAnimation=__playerTestAnimation, rightAnimation=__playerTestAnimation,
                                           zoneShape=__playerRangedZoneShape, AOEShape=__playerRangedAOEShape, zoneColor=(100, 0, 0), AOEColor=(140, 28, 28), applyAttackAnimAdvancement=.5,
                                           idleAbilityIcon=rangedAttackIdleImage, hoverAbilityIcon=rangedAttackHoverImage, clickedAbilityIcon=rangedAttackClickImage)

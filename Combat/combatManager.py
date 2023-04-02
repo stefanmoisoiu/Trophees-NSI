@@ -54,8 +54,9 @@ def DealDamage(entities: list[Entity], ability: Ability, shape: gridManager.Grid
         for shapePosition in shapePositions:
             if entity.gridPosition == shapePosition:
                 damageToApply = ability.GetDamage()
-                # if ability.Missed():
-                #    damageToApply = 0
+                if ability.Missed():
+                    print(f"{entity.properties.name} Missed its attack !")
+                    damageToApply = 0
 
                 entity.health -= damageToApply
                 print(f"{entity.properties.name} took {damageToApply} damage")

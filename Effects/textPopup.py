@@ -28,7 +28,6 @@ class TextPopup:
             self.text, True, self.additionalProperties.color)
         self.rect = self.surface.get_rect()
         self.rect.center = self.startPosition
-        print(f"TextPopupRECT: {self.rect}")
 
         self.alive = True
 

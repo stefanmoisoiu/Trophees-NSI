@@ -27,11 +27,10 @@ class Ability:
 
     def GetDamage(self) -> int:
         '''Retourne les degats de l'attaque en fonction de la range de degats aleatoirement'''
-
-        print(self.damageRange)
         return random.randint(self.damageRange[0], self.damageRange[1])
 
     def Missed(self) -> bool:
+        '''Retourne si l'attaque a rate ou non en fonction de la chance de rate aleatoirement'''
         return random.random() < self.missChance
 
     def GetSpeed(self) -> int:
@@ -70,7 +69,6 @@ class Ability:
         return gridManager.GetGridDirection(direction)
 
     def GetAnimation(self, direction: str) -> Animation:
-        print(direction)
         if direction == "UP":
             return self.upAnimation
         elif direction == "DOWN":
