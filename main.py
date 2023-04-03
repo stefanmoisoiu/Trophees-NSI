@@ -8,6 +8,9 @@ import Base.events as events
 from Base.animation import Animation
 from Base.entity import Entity, EntityProperties
 from Combat.ability import MeleeAbility, MovementAbility, RangedAbility
+from Combat.healthbar import Healthbar
+# IMPORTANT, SUPPRIMER LES IMPORTS INUTILES APRES AVOIR CREE LES FICHIERS CORRESPONDANTS
+
 
 # region Window Setup
 pygame.init()
@@ -168,6 +171,10 @@ __goblinProperties = EntityProperties(
 goblin: Entity = Entity(__goblinProperties, gridPosition=(5, 4))
 # endregion
 
+testHealthbar = Healthbar((32, 8), "L to R", (0, 32))
+events.onLeftClick.append(
+    lambda: testHealthbar.SetPercentage(testHealthbar.percentage - .1))
+
 # region Game Loop
 running: bool = True
 
@@ -208,6 +215,8 @@ while running:
     goblin.Display(screen)
     player.Display(screen)
     playerAbilitiesUI.Display(screen)
+
+    testHealthbar.Display(screen, player.rect.center)
 
     for popup in textPopup.activePopups:
         popup.Display(screen)
