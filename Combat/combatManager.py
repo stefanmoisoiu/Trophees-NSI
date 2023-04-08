@@ -15,6 +15,7 @@ damagePopupAddedHeight = 20
 
 
 def DebugTurns():
+    '''Affiche les turns en cours'''
     print("---Debug Turns---")
     invertedTurns = turnsLeft.copy()
     invertedTurns.reverse()
@@ -27,6 +28,7 @@ def DebugTurns():
 
 
 def ShowDamagePopups(damage: int, worldStartPosition: tuple[float, float]) -> None:
+    '''Affiche les popup de dommage'''
     worldEndPosition = (
         worldStartPosition[0], worldStartPosition[1] - damagePopupAddedHeight)
 
@@ -46,6 +48,7 @@ def ShowDamagePopups(damage: int, worldStartPosition: tuple[float, float]) -> No
 
 
 def DealDamage(entities: list[Entity], ability: Ability, shape: gridManager.GridShape):
+    '''Execute quand l'attaque est appliquee : peut etre appele pendant l'animation a un avancement donne'''
     if ability.damageRange == (0, 0):
         return
 
@@ -109,6 +112,7 @@ def FinishedTurnAnimation():
 
 
 def StopPlayingTurns():
+    '''Execute quand l'animation de l'entite est finie'''
     global playingTurns, currentTurnShape
 
     playingTurns = False
@@ -138,6 +142,7 @@ def PlayNextTurn():
 
 
 def AddTurnShapes():
+    '''Ajoute les shapes de l'entite suivante'''
     if not playingTurns:
         return
     if currentTurnShape is not None:

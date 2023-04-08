@@ -1,5 +1,4 @@
 
-
 class Timer:
     '''Une classe pour attendre un certain temps avant d'executer une fonction'''
 
@@ -14,6 +13,7 @@ class Timer:
         self.running: bool = autoStart
 
     def Reset(self):
+        '''Fonction qui reset le timer'''
         self.timePassed = 0.0
         self.timeLeft = self.duration
         self.advancement = 0.0

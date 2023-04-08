@@ -43,6 +43,7 @@ def setting_draw():
 
 
 def menu():
+    '''Fonction qui gère le menu'''
     global state
     while state == "Menu":
 
@@ -65,6 +66,7 @@ def menu():
 
 
 def setting():
+    '''Fonction qui gère le setting'''
     global state
     while state == "Setting":
 

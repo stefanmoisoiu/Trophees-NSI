@@ -3,6 +3,7 @@ import math
 
 
 class Healthbar:
+    '''Display a healthbar on the screen'''
     def __init__(self, size: tuple[int, int], direction: str, offsetFromPos: tuple[int, int] = (0, 0), fullColor: tuple[int, int, int] = (0, 255, 0), emptyColor: tuple[int, int, int] = (255, 0, 0)) -> None:
         self.size = size
         self.fullColor = fullColor
@@ -18,9 +19,11 @@ class Healthbar:
         # D to U
 
     def SetPercentage(self, newPercentage: float):
+        '''Set the percentage of the healthbar'''
         self.percentage = newPercentage
 
     def GetFullHealthbar(self) -> tuple[int, int, int, int]:
+        '''Get the full healthbar'''
         if self.direction == "R to L":
             return (0, 0, self.size[0] * self.percentage, self.size[1])
         if self.direction == "L to R":

@@ -39,8 +39,8 @@ class Ability:
         return random.randint(self.abilitySpeedRange[0], self.abilitySpeedRange[1])
 
     def GetEnemyAttackShape(self, enemyPositon: tuple[int, int], playerPosition: tuple[int, int]) -> gridManager.GridShape:
-        '''Retourne la forme de l'attaque d'un ennemi en fonction de la position du joueur et de la position de l'entite qui attaque'''
-
+        '''Retourne la forme de l'attaque d'un ennemi en fonction de la position du joueur et de la position de l'enemie'''
+        
         pass
 
     # list[tuple[shape, color, position]]
@@ -69,6 +69,7 @@ class Ability:
         return gridManager.GetGridDirection(direction)
 
     def GetAnimation(self, direction: str) -> Animation:
+        '''Retourne l'animation de l'attaque en fonction de la direction'''
         if direction == "UP":
             return self.upAnimation
         elif direction == "DOWN":

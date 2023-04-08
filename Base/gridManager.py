@@ -13,6 +13,7 @@ cellsToAdd: list[tuple[tuple[int, int], tuple[int, int, int]]] = []
 
 
 class GridShape:
+    '''Classe qui permet de gérer les formes de la grille'''
     def __init__(self, shape: list[str], color: tuple[int, int, int], position: tuple[int, int] = (0, 0)) -> None:
         self.shape = shape
         self.color = color
@@ -28,7 +29,7 @@ def GetGridPosition(position: tuple[int, int]) -> tuple[int, int]:
 
 
 def GetGridDirection(direction: tuple[int, int]) -> str:
-
+    '''Retourne la direction transformee en direction de la grille'''
     if direction[0] >= 0:
         if direction[1] >= direction[0]:
             return "UP"
@@ -52,10 +53,6 @@ def GetWorldPosition(position: tuple[float, float]) -> tuple[float, float]:
     '''Retourne la position transformee en coordonnees du monde'''
     return (position[0] * gridPixelSize, position[1] * gridPixelSize)
 
-
-
-
-
 def DrawGridOutline(screen: pygame.Surface):
     '''Affiche la grille des cellules sur l'ecran'''
     # get screen in grid coordinates
@@ -72,6 +69,7 @@ def DrawGridOutline(screen: pygame.Surface):
 
 
 def GetShapePositions(shape: list[str], gridOffset: tuple[int, int] = (0, 0)) -> list[tuple[int, int]]:
+    '''Retourne la position des cellules de la grille'''
     cellPositions: list[tuple[int, int]] = []
     anchorPos: tuple[int, int] = (0, 0)
     for y in range(len(shape)):
