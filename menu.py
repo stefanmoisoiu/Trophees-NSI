@@ -88,3 +88,7 @@ if state == "Menu":
     menu()
 elif state == "Setting":
     setting()
+elif state == "Game":
+    print("Game")
+else:
+    print("Error")
