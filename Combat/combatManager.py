@@ -56,13 +56,13 @@ def DealDamage(entities: list[Entity], ability: Ability, shape: gridManager.Grid
     for entity in entities:
         for shapePosition in shapePositions:
             if entity.gridPosition == shapePosition:
+                print(f"\n------ {entity.properties.name} ------\n")
                 damageToApply = ability.GetDamage()
                 if ability.Missed():
                     print(f"{entity.properties.name} Missed its attack !")
                     damageToApply = 0
 
-                entity.health -= damageToApply
-                print(f"{entity.properties.name} took {damageToApply} damage")
+                entity.Damage(damageToApply)
 
                 ShowDamagePopups(
                     damageToApply, (entity.rect.centerx, entity.rect.top))
@@ -85,14 +85,12 @@ def PlayTurns(entitiesInTurn: list[Entity], playerTurn: tuple[Entity, Ability, g
     for callback in onStartPlayingTurns:
         callback()
 
-    DebugTurns()
     PlayNextTurn()
 
 
 def ApplyTurnDamage():
     '''Execute quand l'attaque est appliquee : peut etre appele pendant l'animation a un avancement donne'''
 
-    print(f"Applying attack by {turnsLeft[-1][0].properties.name}")
     DealDamage(entities, turnsLeft[-1][1], turnsLeft[-1][2])
     turnsLeft[-1][1].OnAbilityAttackApplied(
         turnsLeft[-1][0], turnsLeft[-1][2], turnsLeft[-1][3])
@@ -108,6 +106,7 @@ def FinishedTurnAnimation():
     turnsLeft[-1][1].OnAbilityAnimationEnded(
         turnsLeft[-1][0], turnsLeft[-1][2], turnsLeft[-1][3])
     turnsLeft.pop()
+
     PlayNextTurn()
 
 
@@ -131,8 +130,6 @@ def PlayNextTurn():
         StopPlayingTurns()
         return
     currentTurnShape = turnsLeft[-1][2]
-
-    print(f"ANIM ADVANCEMENTS : {turnsLeft[-1][1].applyAttackAnimAdvancement}")
 
     turnsLeft[-1][0].properties.animationManager.PlayAnimation(
         turnsLeft[-1][1].GetAnimation(turnsLeft[-1][3]), [(ApplyTurnDamage, turnsLeft[-1][1].applyAttackAnimAdvancement), (FinishedTurnAnimation, 1)])

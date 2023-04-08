@@ -167,13 +167,18 @@ __golbinMoveAbility = MovementAbility(abilitySpeedRange=(0, 6),
                                       upAnimation=__goblinMoveRightAnimation, downAnimation=__goblinMoveRightAnimation, leftAnimation=__goblinMoveLeftAnimation, rightAnimation=__goblinMoveLeftAnimation,
                                       zoneShape=__goblinMoveZoneShape, zoneColor=(0, 0, 100), targetColor=(0, 0, 255), applyAttackAnimAdvancement=.7)
 __goblinProperties = EntityProperties(
-    "Goblin", "A goblin", 5, [__golbinMoveAbility], __goblinIdleAnimation)
+    "Goblin", "A goblin", 5, [__golbinAttackAbility], __goblinIdleAnimation)
 goblin: Entity = Entity(__goblinProperties, gridPosition=(5, 4))
 # endregion
 
-testHealthbar = Healthbar((32, 8), "L to R", (0, 32))
-events.onLeftClick.append(
-    lambda: testHealthbar.SetPercentage(testHealthbar.percentage - .1))
+# region Healthbar Setup
+testHealthbar = Healthbar((32, 8), "R to L", (0, -40))
+player.onDamageValueless.append(lambda: testHealthbar.SetPercentage(
+    player.health / player.properties.startHealth))
+# events.onLeftClick.append(
+#     lambda: player.Damage(1))
+
+# endregion
 
 # region Game Loop
 running: bool = True
