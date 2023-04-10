@@ -34,12 +34,14 @@ def PlayCombatTurnsSetup():
     playerAbilityShape = playerAbility.GetPlayerAttackShape(
         player.gridPosition, mouseGridPos)
 
-    golbinAbilityDirection = goblin.properties.abilities[0].GetAbilityDirection(
+    goblinAbility = goblin.GetEnemyAbility(player.gridPosition)
+
+    golbinAbilityDirection = goblinAbility.GetAbilityDirection(
         player.gridPosition, goblin.gridPosition)
-    golbinAbilityShape = goblin.properties.abilities[0].GetEnemyAttackShape(
+    golbinAbilityShape = goblinAbility.GetEnemyAttackShape(
         goblin.gridPosition, player.gridPosition)
     combatManager.PlayTurns([player, goblin],
-                            (player, playerAbility, playerAbilityShape, playerAbilityDirection), [(goblin, goblin.properties.abilities[0], golbinAbilityShape, golbinAbilityDirection)])
+                            (player, playerAbility, playerAbilityShape, playerAbilityDirection), [(goblin, goblinAbility, golbinAbilityShape, golbinAbilityDirection)])
 
 # region Player Setup : A DEPLACER DANS UN FICHIER DE CONFIGURATION AVEC LES DIFFERENTES CLASSES DU JOUEUR + LES ARMES ET LES ITEMS QU'ON PEUT OBTENIR
 
@@ -52,7 +54,6 @@ swordAttackHoverImage = pygame.image.load(
 swordAttackClickImage = pygame.image.load(
     "Sprites/Abilities/Player/sword_icon_click.png")
 # endregion
-
 __playerIdleAnimation = Animation(pygame.image.load(
     "Sprites/Entities/Player/player_idle.png"), loop=True, length=.25, horizontalFrames=4, verticalFrames=1, scale=2, topleft=(.175, .175))
 __playerTestAnimation = Animation(pygame.image.load(
@@ -167,7 +168,7 @@ __golbinMoveAbility = MovementAbility(abilitySpeedRange=(0, 6),
                                       upAnimation=__goblinMoveRightAnimation, downAnimation=__goblinMoveRightAnimation, leftAnimation=__goblinMoveLeftAnimation, rightAnimation=__goblinMoveLeftAnimation,
                                       zoneShape=__goblinMoveZoneShape, zoneColor=(0, 0, 100), targetColor=(0, 0, 255), applyAttackAnimAdvancement=.7)
 __goblinProperties = EntityProperties(
-    "Goblin", "A goblin", 5, [__golbinAttackAbility], __goblinIdleAnimation)
+    "Goblin", "A goblin", 5, [__golbinAttackAbility, __golbinMoveAbility], __goblinIdleAnimation)
 goblin: Entity = Entity(__goblinProperties, gridPosition=(5, 4))
 # endregion
 
@@ -175,8 +176,6 @@ goblin: Entity = Entity(__goblinProperties, gridPosition=(5, 4))
 testHealthbar = Healthbar((32, 8), "R to L", (0, -40))
 player.onDamageValueless.append(lambda: testHealthbar.SetPercentage(
     player.health / player.properties.startHealth))
-# events.onLeftClick.append(
-#     lambda: player.Damage(1))
 
 # endregion
 

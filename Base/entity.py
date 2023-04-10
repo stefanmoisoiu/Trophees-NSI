@@ -53,3 +53,15 @@ class Entity:
 
         self.properties.animationManager.Update(deltaTime)
         self.rect.topleft = gridManager.GetWorldPosition(self.gridPosition)
+
+    def GetEnemyAbility(self, playerPosition: tuple[int, int]) -> Ability:
+        '''Retourne l'attaque de l'ennemi en fonction de la position du joueur'''
+
+        for i in range(len(self.properties.abilities) - 1):
+            abilityGridShape = self.properties.abilities[i].GetEnemyAttackShape(
+                self.gridPosition, playerPosition)
+            abilityPositions = gridManager.GetShapePositions(
+                abilityGridShape.shape, abilityGridShape.position)
+            if playerPosition in abilityPositions:
+                return self.properties.abilities[i]
+        return self.properties.abilities[-1]
