@@ -1,4 +1,4 @@
-from Base.entity import Entity
+from Entities.entity import Entity
 from Combat.ability import Ability
 import Base.gridManager as gridManager
 import Effects.textPopup as textPopup

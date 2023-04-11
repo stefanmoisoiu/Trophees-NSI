@@ -1,5 +1,5 @@
 import pygame
-from Base.entity import Entity
+from Entities.entity import Entity
 from Combat.ability import Ability
 from UI.button import Button
 import Base.gridManager as gridManager
