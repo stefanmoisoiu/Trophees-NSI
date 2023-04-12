@@ -31,6 +31,11 @@ playerAbilitiesUI.GenerateAbilityButtons()
 goblin = Entity(enemies.goblinProperties, gridPosition=(8, 4))
 goblinHealthbar = healthbar.CreateEntityHealthbar(goblin)
 
+mageTest = Entity(enemies.mageTestProperties, gridPosition=(6, 3))
+mageTestHealthbar = healthbar.CreateEntityHealthbar(mageTest)
+
+enemyList = [mageTest,goblin]
+
 # region Game Loop
 running: bool = True
 
@@ -44,7 +49,8 @@ def QuitGame():
 events.onQuit.append(QuitGame)
 
 # A changer plus tard
-events.onLeftClick.append(lambda: combatManager.SetupAndPlayTurns([goblin],player,playerAbilitiesUI,mouseGridPos))
+events.onLeftClick.append(lambda: combatManager.SetupAndPlayTurns(
+    enemyList, player, playerAbilitiesUI, mouseGridPos))
 
 while running:
     # region Setup:Events,variables,etc...
@@ -58,7 +64,9 @@ while running:
     # endregion
 
 # region Entities
-    goblin.Update(deltaTime)
+    for enemy in enemyList:
+        enemy.Update(deltaTime)
+    
     player.Update(deltaTime)
     for popup in textPopup.activePopups:
         if not popup.alive:
@@ -70,12 +78,15 @@ while running:
     combatManager.AddTurnShapes()
     gridManager.DrawCells(screen)
 
-    goblin.Display(screen)
+    for enemy in enemyList:
+        enemy.Display(screen)
+
     player.Display(screen)
     playerAbilitiesUI.Display(screen)
 
     playerHealthbar.Display(screen, player.rect.center)
     goblinHealthbar.Display(screen, goblin.rect.center)
+    mageTestHealthbar.Display(screen, mageTest.rect.center)
 
     for popup in textPopup.activePopups:
         popup.Display(screen)
