@@ -21,28 +21,6 @@ framerate: int = 60
 clock = pygame.time.Clock()
 # endregion
 
-
-# temporaire, a remplacer dans combatManager
-def PlayCombatTurnsSetup():
-    if combatManager.playingTurns or playerAbilitiesUI.currentAbility is None or playerAbilitiesUI.ButtonHovered():
-        return
-    playerAbility = playerAbilitiesUI.currentAbility
-
-    playerAbilityDirection = playerAbility.GetAbilityDirection(
-        mouseGridPos, player.gridPosition)
-    playerAbilityShape = playerAbility.GetPlayerAttackShape(
-        player.gridPosition, mouseGridPos)
-
-    goblinAbility = goblin.GetEnemyAbility(player.gridPosition)
-
-    golbinAbilityDirection = goblinAbility.GetAbilityDirection(
-        player.gridPosition, goblin.gridPosition)
-    golbinAbilityShape = goblinAbility.GetEnemyAttackShape(
-        goblin.gridPosition, player.gridPosition)
-    combatManager.PlayTurns([player, goblin],
-                            (player, playerAbility, playerAbilityShape, playerAbilityDirection), [(goblin, goblinAbility, golbinAbilityShape, golbinAbilityDirection)])
-
-
 player: Entity = Entity(playerClasses.playerProperties, gridPosition=(4, 4))
 playerHealthbar = healthbar.CreateEntityHealthbar(player)
 
@@ -64,7 +42,9 @@ def QuitGame():
 
 
 events.onQuit.append(QuitGame)
-events.onLeftClick.append(PlayCombatTurnsSetup)
+
+# A changer plus tard
+events.onLeftClick.append(lambda: combatManager.SetupAndPlayTurns([goblin],player,playerAbilitiesUI,mouseGridPos))
 
 while running:
     # region Setup:Events,variables,etc...

@@ -68,6 +68,30 @@ def DealDamage(entities: list[Entity], ability: Ability, shape: gridManager.Grid
                     damageToApply, (entity.rect.centerx, entity.rect.top))
 
 
+def SetupAndPlayTurns(enemies: list[Entity], player: Entity, playerAbilitiesUI,mouseGridPos:tuple[int,int]):
+    if playingTurns or playerAbilitiesUI.currentAbility is None or playerAbilitiesUI.ButtonHovered():
+        return
+    
+    playerAbility = playerAbilitiesUI.currentAbility
+
+    playerAbilityDirection = playerAbility.GetAbilityDirection(
+        mouseGridPos, player.gridPosition)
+    playerAbilityShape = playerAbility.GetPlayerAttackShape(
+        player.gridPosition, mouseGridPos)
+    
+    enemyInfos = []
+    for enemy in enemies:
+        enemyAbility = enemy.GetEnemyAbility(player.gridPosition)
+
+        enemyAbilityDirection = enemyAbility.GetAbilityDirection(
+            player.gridPosition, enemy.gridPosition)
+        enemyAbilityShape = enemyAbility.GetEnemyAttackShape(
+            enemy.gridPosition, player.gridPosition)
+        
+        enemyInfos.append((enemy, enemyAbility, enemyAbilityShape, enemyAbilityDirection))
+    PlayTurns(enemies + [player],
+              (player, playerAbility, playerAbilityShape, playerAbilityDirection), enemyInfos)
+
 def PlayTurns(entitiesInTurn: list[Entity], playerTurn: tuple[Entity, Ability, gridManager.GridShape, str],
               enemyTurns: list[tuple[Entity, Ability, gridManager.GridShape, str]]):
     '''Execute quand le joueur a fini de choisir son attaque'''
@@ -111,7 +135,7 @@ def FinishedTurnAnimation():
 
 
 def StopPlayingTurns():
-    '''Execute quand l'animation de l'entite est finie'''
+    '''Arrete de jouer les tours et execute les callbacks'''
     global playingTurns, currentTurnShape
 
     playingTurns = False
