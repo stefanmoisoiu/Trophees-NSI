@@ -1,9 +1,10 @@
 import pygame
 import math
 
+from Entities.entity import Entity
+
 
 class Healthbar:
-    '''Display a healthbar on the screen'''
 
     def __init__(self, size: tuple[int, int], direction: str, offsetFromPos: tuple[int, int] = (0, 0), fullColor: tuple[int, int, int] = (0, 255, 0), emptyColor: tuple[int, int, int] = (255, 0, 0)) -> None:
         self.size = size
@@ -48,3 +49,8 @@ class Healthbar:
                                             pos[1] + self.offsetFromPos[1] + fullHealthbarInfo[1] - self.size[1] / 2),
                                         fullHealthbarInfo[2], fullHealthbarInfo[3])
         pygame.draw.rect(screen, self.fullColor, fullHealthbarRect)
+
+def CreateEntityHealthbar(entity : Entity) -> Healthbar:
+    healthbar = Healthbar((32, 8), "R to L", (0, -40))
+    entity.onDamageValueless.append(lambda: healthbar.SetPercentage( entity.health / entity.properties.startHealth))
+    return healthbar

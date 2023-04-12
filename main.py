@@ -5,7 +5,7 @@ import Base.gridManager as gridManager
 import Combat.combatManager as combatManager
 import Base.events as events
 from Entities.entity import Entity
-from Combat.healthbar import Healthbar
+import Combat.healthbar as healthbar
 import Entities.enemies as enemies
 import Entities.playerClasses as playerClasses
 # IMPORTANT, SUPPRIMER LES IMPORTS INUTILES APRES AVOIR CREE LES FICHIERS CORRESPONDANTS
@@ -44,16 +44,14 @@ def PlayCombatTurnsSetup():
 
 
 player: Entity = Entity(playerClasses.playerProperties, gridPosition=(4, 4))
-
-testHealthbar = Healthbar((32, 8), "R to L", (0, -40))
-player.onDamageValueless.append(lambda: testHealthbar.SetPercentage(
-    player.health / player.properties.startHealth))
+playerHealthbar = healthbar.CreateEntityHealthbar(player)
 
 playerAbilitiesUI = PlayerAbilitiesUI(player, 1)
 playerAbilitiesUI.GenerateAbilityButtons()
 
 
 goblin = Entity(enemies.goblinProperties, gridPosition=(8, 4))
+goblinHealthbar = healthbar.CreateEntityHealthbar(goblin)
 
 # region Game Loop
 running: bool = True
@@ -96,7 +94,8 @@ while running:
     player.Display(screen)
     playerAbilitiesUI.Display(screen)
 
-    testHealthbar.Display(screen, player.rect.center)
+    playerHealthbar.Display(screen, player.rect.center)
+    goblinHealthbar.Display(screen, goblin.rect.center)
 
     for popup in textPopup.activePopups:
         popup.Display(screen)
