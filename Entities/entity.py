@@ -57,11 +57,20 @@ class Entity:
     def GetEnemyAbility(self, playerPosition: tuple[int, int]) -> Ability:
         '''Retourne l'attaque de l'ennemi en fonction de la position du joueur'''
 
-        for i in range(len(self.properties.abilities) - 1):
+        for i in range(len(self.properties.abilities) -1):
+            if self.properties.abilities[i].currentCooldown > 0:
+                self.properties.abilities[i].ReduceAbilityCooldown()
+                continue
+            self.properties.abilities[i].ReduceAbilityCooldown()
+
             abilityGridShape = self.properties.abilities[i].GetEnemyAttackShape(
                 self.gridPosition, playerPosition)
             abilityPositions = gridManager.GetShapePositions(
                 abilityGridShape.shape, abilityGridShape.position)
             if playerPosition in abilityPositions:
                 return self.properties.abilities[i]
+        
+        if self.properties.abilities[-1].currentCooldown > 0:
+            self.properties.abilities[-1].ReduceAbilityCooldown()
+            return None
         return self.properties.abilities[-1]

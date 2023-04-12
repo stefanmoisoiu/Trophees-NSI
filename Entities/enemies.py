@@ -37,7 +37,7 @@ __goblinMoveLeftAnimation = Animation(pygame.image.load(
     "Sprites/Entities/Enemy/goblin_attack_right.png"), loop=False, length=.2, horizontalFrames=7, verticalFrames=1, flip=True, scale=2, topleft=(.333, .333))
 __golbinMoveAbility = MovementAbility(abilitySpeedRange=(0, 6),
                                       upAnimation=__goblinMoveRightAnimation, downAnimation=__goblinMoveRightAnimation, leftAnimation=__goblinMoveLeftAnimation, rightAnimation=__goblinMoveLeftAnimation,
-                                      zoneShape=__goblinMoveZoneShape, zoneColor=(0, 0, 100), targetColor=(0, 0, 255), applyAttackAnimAdvancement=.7)
+                                      zoneShape=__goblinMoveZoneShape, zoneColor=(0, 0, 100), targetColor=(0, 0, 255), applyAttackAnimAdvancement=.7,cooldown=1)
 goblinProperties = EntityProperties(
     "Goblin", "A goblin", 5, [__golbinAttackAbility, __golbinMoveAbility], __goblinIdleAnimation)
 #endregion
@@ -55,6 +55,6 @@ __mageTestAbility = RangedAbility(damageRange=(3, 6), abilitySpeedRange=(1, 3), 
                                              "  FFF  ",
                                              "   F   "], zoneColor=(100, 0, 0),
                                   AOEShape=["F"], AOEColor=(255, 0, 0),
-                                  applyAttackAnimAdvancement=.5)
+                                  applyAttackAnimAdvancement=.5, cooldown=2)
 mageTestProperties = EntityProperties("Mage Test","Test", 5, [__mageTestAbility,__golbinMoveAbility], __mageTestAnim)
 #endregion

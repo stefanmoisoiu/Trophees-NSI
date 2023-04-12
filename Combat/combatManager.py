@@ -79,17 +79,22 @@ def SetupAndPlayTurns(enemies: list[Entity], player: Entity, playerAbilitiesUI,m
     playerAbilityShape = playerAbility.GetPlayerAttackShape(
         player.gridPosition, mouseGridPos)
     
+    enemiesUsingAbilities = []
     enemyInfos = []
     for enemy in enemies:
+        
         enemyAbility = enemy.GetEnemyAbility(player.gridPosition)
+        if enemyAbility is None:
+            continue
 
         enemyAbilityDirection = enemyAbility.GetAbilityDirection(
             player.gridPosition, enemy.gridPosition)
         enemyAbilityShape = enemyAbility.GetEnemyAttackShape(
             enemy.gridPosition, player.gridPosition)
         
+        enemiesUsingAbilities.append(enemy)
         enemyInfos.append((enemy, enemyAbility, enemyAbilityShape, enemyAbilityDirection))
-    PlayTurns(enemies + [player],
+    PlayTurns(enemiesUsingAbilities + [player],
               (player, playerAbility, playerAbilityShape, playerAbilityDirection), enemyInfos)
 
 def PlayTurns(entitiesInTurn: list[Entity], playerTurn: tuple[Entity, Ability, gridManager.GridShape, str],
