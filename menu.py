@@ -1,6 +1,8 @@
 import pygame
 import math
+
 from UI.button import Button
+from main import gameLoop
 
 
 screen = pygame.display.set_mode((800, 600), pygame.RESIZABLE)
@@ -25,6 +27,7 @@ button_arrow_rect = button_arrow.get_rect()
 
 
 state: str = "Menu"
+running: bool = False
 
 
 def menu_draw():
@@ -92,5 +95,7 @@ elif state == "Setting":
     setting()
 elif state == "Game":
     print("Game")
+    running = True
+    gameLoop(running)
 else:
     print("Error")

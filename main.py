@@ -37,7 +37,7 @@ mageTestHealthbar = healthbar.CreateEntityHealthbar(mageTest)
 enemyList = [mageTest,goblin]
 
 # region Game Loop
-running: bool = True
+# running: bool = True 
 
 
 def QuitGame():
@@ -52,44 +52,49 @@ events.onQuit.append(QuitGame)
 events.onLeftClick.append(lambda: combatManager.SetupAndPlayTurns(
     enemyList, player, playerAbilitiesUI, mouseGridPos))
 
-while running:
-    # region Setup:Events,variables,etc...
-    deltaTime = clock.tick(framerate) / 1000
-    mouseGridPos = gridManager.GetGridPosition(pygame.mouse.get_pos())
 
-    screen.fill((0, 0, 0))
-    gridManager.DrawGridOutline(screen)
 
-    events.CheckEvents(pygame.event.get())
-    # endregion
+def gameLoop(running: bool):
+    '''Boucle du jeu'''
+    while running:
+        # region Setup:Events,variables,etc...
+        global mouseGridPos
+        deltaTime = clock.tick(framerate) / 1000
+        mouseGridPos = gridManager.GetGridPosition(pygame.mouse.get_pos())
 
-# region Entities
-    for enemy in enemyList:
-        enemy.Update(deltaTime)
+        screen.fill((0, 0, 0))
+        gridManager.DrawGridOutline(screen)
+
+        events.CheckEvents(pygame.event.get())
+        # endregion
+
+    # region Entities
+        for enemy in enemyList:
+            enemy.Update(deltaTime)
     
-    player.Update(deltaTime)
-    for popup in textPopup.activePopups:
-        if not popup.alive:
-            textPopup.activePopups.remove(popup)
-        else:
-            popup.Update(deltaTime)
-    playerAbilitiesUI.Update(mouseGridPos)
+        player.Update(deltaTime)
+        for popup in textPopup.activePopups:
+            if not popup.alive:
+                textPopup.activePopups.remove(popup)
+            else:
+                popup.Update(deltaTime)
+        playerAbilitiesUI.Update(mouseGridPos)
 
-    combatManager.AddTurnShapes()
-    gridManager.DrawCells(screen)
+        combatManager.AddTurnShapes()
+        gridManager.DrawCells(screen)
 
-    for enemy in enemyList:
-        enemy.Display(screen)
+        for enemy in enemyList:
+            enemy.Display(screen)
 
-    player.Display(screen)
-    playerAbilitiesUI.Display(screen)
+        player.Display(screen)
+        playerAbilitiesUI.Display(screen)
 
-    playerHealthbar.Display(screen, player.rect.center)
-    goblinHealthbar.Display(screen, goblin.rect.center)
-    mageTestHealthbar.Display(screen, mageTest.rect.center)
+        playerHealthbar.Display(screen, player.rect.center)
+        goblinHealthbar.Display(screen, goblin.rect.center)
+        mageTestHealthbar.Display(screen, mageTest.rect.center)
 
-    for popup in textPopup.activePopups:
-        popup.Display(screen)
-# endregion
-    pygame.display.flip()
-# endregion
+        for popup in textPopup.activePopups:
+            popup.Display(screen)
+    # endregion
+        pygame.display.flip()
+    # endregion

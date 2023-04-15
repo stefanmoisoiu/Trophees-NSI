@@ -21,6 +21,7 @@ class Healthbar:
         # D to U
 
     def SetPercentage(self, newPercentage: float):
+        '''Set the percentage of the healthbar'''
         self.percentage = newPercentage
 
     def GetFullHealthbar(self) -> tuple[int, int, int, int]:
@@ -51,6 +52,7 @@ class Healthbar:
         pygame.draw.rect(screen, self.fullColor, fullHealthbarRect)
 
 def CreateEntityHealthbar(entity : Entity) -> Healthbar:
+    '''Create a healthbar for an entity'''
     healthbar = Healthbar((32, 8), "R to L", (0, -40))
     entity.onDamageValueless.append(lambda: healthbar.SetPercentage( entity.health / entity.properties.startHealth))
     return healthbar
