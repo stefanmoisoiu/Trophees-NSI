@@ -1,6 +1,7 @@
 import pygame
 
 onQuit: list[callable] = []
+quitting : bool = False
 onLeftClick: list[callable] = []
 
 
@@ -11,9 +12,11 @@ def CallCallbacks(callbacks: list[callable]):
 
 
 def CheckEvents(events: list[pygame.event.Event]):
+    global quitting
     '''Fonction qui verifie les evenements'''
     for event in events:
         if event.type == pygame.QUIT:
+            quitting = True
             CallCallbacks(onQuit)
         if event.type == pygame.MOUSEBUTTONDOWN:
             CallCallbacks(onLeftClick)

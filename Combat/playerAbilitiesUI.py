@@ -1,5 +1,4 @@
 import pygame
-from Entities.entity import Entity
 from Combat.ability import Ability
 from UI.button import Button
 import Base.gridManager as gridManager
@@ -8,7 +7,7 @@ import Combat.combatManager as combatManager
 
 class PlayerAbilitiesUI:
     '''Classe de l'UI du joueur'''
-    def __init__(self, playerEntity: Entity, buttonScale: int = 1):
+    def __init__(self, playerEntity, buttonScale: int = 1):
         self.playerEntity = playerEntity
         self.buttonScale = buttonScale
         self.currentAbility: Ability = None

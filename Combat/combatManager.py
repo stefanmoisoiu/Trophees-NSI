@@ -81,6 +81,7 @@ def SetupAndPlayTurns(enemies: list[Entity], player: Entity, playerAbilitiesUI,m
     
     enemiesUsingAbilities = []
     enemyInfos = []
+    
     for enemy in enemies:
         
         enemyAbility = enemy.GetEnemyAbility(player.gridPosition)

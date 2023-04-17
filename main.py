@@ -1,14 +1,13 @@
-import Effects.textPopup as textPopup
-from Combat.playerAbilitiesUI import PlayerAbilitiesUI
 import pygame
+import Effects.textPopup as textPopup
 import Base.gridManager as gridManager
 import Combat.combatManager as combatManager
+
 import Base.events as events
-from Entities.entity import Entity
-import Combat.healthbar as healthbar
+
+import Entities.entity as entity
 import Entities.enemies as enemies
 import Entities.playerClasses as playerClasses
-# IMPORTANT, SUPPRIMER LES IMPORTS INUTILES APRES AVOIR CREE LES FICHIERS CORRESPONDANTS
 
 
 # region Window Setup
@@ -21,42 +20,28 @@ framerate: int = 60
 clock = pygame.time.Clock()
 # endregion
 
-player: Entity = Entity(playerClasses.playerProperties, gridPosition=(4, 4))
-playerHealthbar = healthbar.CreateEntityHealthbar(player)
+player = entity.CreatePlayer(
+    playerClasses.playerProperties,(4,4))
 
-playerAbilitiesUI = PlayerAbilitiesUI(player, 1)
-playerAbilitiesUI.GenerateAbilityButtons()
+events.onLeftClick.append(lambda: combatManager.SetupAndPlayTurns(
+    [x[0] for x in enemyList], player[0], player[2], mouseGridPos))
 
+goblin = entity.CreateEnemy(enemies.goblinProperties,(3,5))
+mageTest = entity.CreateEnemy(enemies.mageTestProperties, (3, 5))
 
-goblin = Entity(enemies.goblinProperties, gridPosition=(8, 4))
-goblinHealthbar = healthbar.CreateEntityHealthbar(goblin)
-
-mageTest = Entity(enemies.mageTestProperties, gridPosition=(6, 3))
-mageTestHealthbar = healthbar.CreateEntityHealthbar(mageTest)
-
+# Tuple de Entity, Healthbar
 enemyList = [mageTest,goblin]
+
 
 # region Game Loop
 # running: bool = True 
 
 
-def QuitGame():
-    global running
-    running = False
-    print("Quit game")
-
-
-events.onQuit.append(QuitGame)
-
-# A changer plus tard
-events.onLeftClick.append(lambda: combatManager.SetupAndPlayTurns(
-    enemyList, player, playerAbilitiesUI, mouseGridPos))
-
-
-
-def gameLoop(running: bool):
+def gameLoop():
+    running = True
     '''Boucle du jeu'''
     while running:
+
         # region Setup:Events,variables,etc...
         global mouseGridPos
         deltaTime = clock.tick(framerate) / 1000
@@ -66,35 +51,42 @@ def gameLoop(running: bool):
         gridManager.DrawGridOutline(screen)
 
         events.CheckEvents(pygame.event.get())
+        if events.quitting:
+            running = False
+        
         # endregion
 
     # region Entities
         for enemy in enemyList:
-            enemy.Update(deltaTime)
-    
-        player.Update(deltaTime)
+            enemy[0].Update(deltaTime)
+        
+        player[0].Update(deltaTime)
+        player[2].Update(mouseGridPos)
+        
+        combatManager.AddTurnShapes()
+        gridManager.DrawCells(screen)
+
+        player[0].Display(screen)
+        player[1].Display(screen, player[0].rect.center)
+        player[2].Display(screen)
+        
+        for enemy in enemyList:
+            enemy[0].Display(screen)
+            enemy[1].Display(screen, enemy[0].rect.center)
+    # endregion
+
         for popup in textPopup.activePopups:
             if not popup.alive:
                 textPopup.activePopups.remove(popup)
             else:
                 popup.Update(deltaTime)
-        playerAbilitiesUI.Update(mouseGridPos)
-
-        combatManager.AddTurnShapes()
-        gridManager.DrawCells(screen)
-
-        for enemy in enemyList:
-            enemy.Display(screen)
-
-        player.Display(screen)
-        playerAbilitiesUI.Display(screen)
-
-        playerHealthbar.Display(screen, player.rect.center)
-        goblinHealthbar.Display(screen, goblin.rect.center)
-        mageTestHealthbar.Display(screen, mageTest.rect.center)
-
+        
         for popup in textPopup.activePopups:
             popup.Display(screen)
-    # endregion
+        
+
         pygame.display.flip()
     # endregion
+
+
+loop = gameLoop()

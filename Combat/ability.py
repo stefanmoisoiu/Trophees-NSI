@@ -40,23 +40,19 @@ class Ability:
 
     def GetSpeed(self) -> int:
         '''Retourne la vitesse de l'attaque en fonction de la range de vitesse aleatoirement'''
-
         return random.randint(self.abilitySpeedRange[0], self.abilitySpeedRange[1])
 
     def GetEnemyAttackShape(self, enemyPositon: tuple[int, int], playerPosition: tuple[int, int]) -> gridManager.GridShape:
         '''Retourne la forme de l'attaque d'un ennemi en fonction de la position du joueur et de la position de l'enemie'''
-        
         pass
 
     # list[tuple[shape, color, position]]
     def GetPlayerPreviewShapes(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> list[gridManager.GridShape]:
         '''Retourne les formes de la previsualisation de l'attaque d'un joueur en fonction de la position du joueur et de la position de la souris'''
-
         pass
 
     def GetPlayerAttackShape(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> gridManager.GridShape:
         '''Retourne la forme de l'attaque d'un joueur en fonction de la position du joueur et de la position de la souris'''
-
         pass
 
     def OnAbilityAnimationStarted(self, entity, shape: gridManager.GridShape, direction: str) -> None:

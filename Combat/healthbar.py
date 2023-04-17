@@ -1,8 +1,6 @@
 import pygame
 import math
 
-from Entities.entity import Entity
-
 
 class Healthbar:
 
@@ -51,7 +49,7 @@ class Healthbar:
                                         fullHealthbarInfo[2], fullHealthbarInfo[3])
         pygame.draw.rect(screen, self.fullColor, fullHealthbarRect)
 
-def CreateEntityHealthbar(entity : Entity) -> Healthbar:
+def CreateEntityHealthbar(entity) -> Healthbar:
     '''Create a healthbar for an entity'''
     healthbar = Healthbar((32, 8), "R to L", (0, -40))
     entity.onDamageValueless.append(lambda: healthbar.SetPercentage( entity.health / entity.properties.startHealth))
