@@ -81,19 +81,19 @@ class PlayerAbilitiesUI:
                 self.UpdateButtonsPosition(screen)
                 self.buttons[i].Display(screen)
 
-    def Update(self, mouseGridPos: tuple[int, int]):
+    def Update(self, mouseGridPos: tuple[int, int], entityPositions: list[tuple[int, int]]):
         '''Mise à jour de l'UI'''
         if self.showButtons:
             for button in self.buttons:
                 button.Update()
 
         if not combatManager.playingTurns:
-            self.AddPreviewAbilityShape(mouseGridPos)
+            self.AddPreviewAbilityShape(mouseGridPos, entityPositions)
 
-    def AddPreviewAbilityShape(self, mouseGridPos: tuple[int, int]):
+    def AddPreviewAbilityShape(self, mouseGridPos: tuple[int, int], entityPositions: list[tuple[int, int]]):
         '''Ajoute un preview d'attaque à la souris'''
         if self.currentAbility is None:
             return
         for attackPreviewShape in self.currentAbility.GetPlayerPreviewShapes(
-                self.playerEntity.gridPosition, mouseGridPos):
+                self.playerEntity.gridPosition, mouseGridPos, entityPositions):
             gridManager.AddShape(attackPreviewShape)

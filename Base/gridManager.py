@@ -14,12 +14,9 @@ cellsToAdd: list[tuple[tuple[int, int], tuple[int, int, int]]] = []
 
 class GridShape:
     '''Classe qui permet de gérer les formes de la grille'''
-    def __init__(self, shape: list[str], color: tuple[int, int, int], position: tuple[int, int] = (0, 0)) -> None:
-        self.shape = shape
+    def __init__(self, shapePositions : tuple[int,int], color: tuple[int, int, int]) -> None:
+        self.shapePositions = shapePositions
         self.color = color
-        self.position = position
-
-
 
 
 
@@ -89,20 +86,12 @@ def GetShapePositions(shape: list[str], gridOffset: tuple[int, int] = (0, 0)) ->
 
 
 def AddShape(shape: GridShape):
-    '''Ajoute une forme a la liste des cellules a ajouter. La forme est une liste de strings, chaque string represente une ligne de la forme. Chaque caractere de la string represente un pixel de la forme. Les caracteres possibles sont: F = filled grid cell, C = center of the shape, O = filled center of the shape.'''
-    
-    global cellsToAdd
-    # example shape:
-    # shape = ["FFF",
-    #          "FCF",
-    #          "FFF"]
+    '''Ajoute une forme a la liste des cellules a ajouter. La forme est une liste de strings, chaque string represente une ligne de la forme.
+    Chaque caractere de la string represente un pixel de la forme.
+    Les caracteres possibles sont: F = rempli, C = centre, O = centre rempli'''
 
-    cellPositions: list[tuple[int, int]] = GetShapePositions(
-        shape.shape, shape.position)
-
-    for cellPosition in cellPositions:
+    for cellPosition in shape.shapePositions:
         cellsToAdd.append((cellPosition, shape.color))
-
 
 
 

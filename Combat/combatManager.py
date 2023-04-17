@@ -51,10 +51,9 @@ def DealDamage(entities: list[Entity], ability: Ability, shape: gridManager.Grid
     '''Execute quand l'attaque est appliquee : peut etre appele pendant l'animation a un avancement donne'''
     if ability.damageRange == (0, 0):
         return
-
-    shapePositions = gridManager.GetShapePositions(shape.shape, shape.position)
+    
     for entity in entities:
-        for shapePosition in shapePositions:
+        for shapePosition in shape.shapePositions:
             if entity.gridPosition == shapePosition:
                 print(f"\n------ {entity.properties.name} ------\n")
                 damageToApply = ability.GetDamage()
@@ -72,26 +71,30 @@ def SetupAndPlayTurns(enemies: list[Entity], player: Entity, playerAbilitiesUI,m
     if playingTurns or playerAbilitiesUI.currentAbility is None or playerAbilitiesUI.ButtonHovered():
         return
     
+    entities = enemies + [player]
+    entityPositions = [x.gridPosition for x in entities]
+    
     playerAbility = playerAbilitiesUI.currentAbility
 
     playerAbilityDirection = playerAbility.GetAbilityDirection(
         mouseGridPos, player.gridPosition)
     playerAbilityShape = playerAbility.GetPlayerAttackShape(
-        player.gridPosition, mouseGridPos)
+        player.gridPosition, mouseGridPos, entityPositions)
     
     enemiesUsingAbilities = []
     enemyInfos = []
     
     for enemy in enemies:
         
-        enemyAbility = enemy.GetEnemyAbility(player.gridPosition)
+        enemyAbility = enemy.GetEnemyAbility(
+            player.gridPosition, entityPositions)
         if enemyAbility is None:
             continue
 
         enemyAbilityDirection = enemyAbility.GetAbilityDirection(
             player.gridPosition, enemy.gridPosition)
         enemyAbilityShape = enemyAbility.GetEnemyAttackShape(
-            enemy.gridPosition, player.gridPosition)
+            enemy.gridPosition, player.gridPosition, entityPositions)
         
         enemiesUsingAbilities.append(enemy)
         enemyInfos.append((enemy, enemyAbility, enemyAbilityShape, enemyAbilityDirection))

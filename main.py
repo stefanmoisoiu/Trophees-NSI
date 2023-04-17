@@ -61,7 +61,7 @@ def gameLoop():
             enemy[0].Update(deltaTime)
         
         player[0].Update(deltaTime)
-        player[2].Update(mouseGridPos)
+        player[2].Update(mouseGridPos, [x[0].gridPosition for x in enemyList])
         
         combatManager.AddTurnShapes()
         gridManager.DrawCells(screen)
@@ -87,6 +87,4 @@ def gameLoop():
 
         pygame.display.flip()
     # endregion
-
-
 loop = gameLoop()

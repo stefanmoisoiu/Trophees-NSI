@@ -42,16 +42,16 @@ class Ability:
         '''Retourne la vitesse de l'attaque en fonction de la range de vitesse aleatoirement'''
         return random.randint(self.abilitySpeedRange[0], self.abilitySpeedRange[1])
 
-    def GetEnemyAttackShape(self, enemyPositon: tuple[int, int], playerPosition: tuple[int, int]) -> gridManager.GridShape:
+    def GetEnemyAttackShape(self, enemyPositon: tuple[int, int], playerPosition: tuple[int, int], entityPositions: list[tuple[int, int]]) -> gridManager.GridShape:
         '''Retourne la forme de l'attaque d'un ennemi en fonction de la position du joueur et de la position de l'enemie'''
         pass
 
     # list[tuple[shape, color, position]]
-    def GetPlayerPreviewShapes(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> list[gridManager.GridShape]:
+    def GetPlayerPreviewShapes(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int], entityPositions: list[tuple[int, int]]) -> list[gridManager.GridShape]:
         '''Retourne les formes de la previsualisation de l'attaque d'un joueur en fonction de la position du joueur et de la position de la souris'''
         pass
 
-    def GetPlayerAttackShape(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> gridManager.GridShape:
+    def GetPlayerAttackShape(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int], entityPositions: list[tuple[int, int]]) -> gridManager.GridShape:
         '''Retourne la forme de l'attaque d'un joueur en fonction de la position du joueur et de la position de la souris'''
         pass
 
@@ -102,27 +102,31 @@ class MeleeAbility(Ability):
         self.shapeRight = shapeRight
         self.shapeColor = shapeColor
 
-    def GetPlayerPreviewShapes(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> list[gridManager.GridShape]:
+    def GetPlayerPreviewShapes(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int], entityPositions: list[tuple[int, int]]) -> list[gridManager.GridShape]:
         return [self.GetMeleeAttackShape(playerPosition, mousePositon)]
 
-    def GetPlayerAttackShape(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> gridManager.GridShape:
+    def GetPlayerAttackShape(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int], entityPositions: list[tuple[int, int]]) -> gridManager.GridShape:
         return self.GetMeleeAttackShape(playerPosition, mousePositon)
 
-    def GetEnemyAttackShape(self, enemyPositon: tuple[int, int], playerPosition: tuple[int, int]) -> gridManager.GridShape:
+    def GetEnemyAttackShape(self, enemyPositon: tuple[int, int], playerPosition: tuple[int, int], entityPositions: list[tuple[int, int]]) -> gridManager.GridShape:
         return self.GetMeleeAttackShape(enemyPositon, playerPosition)
 
     def GetMeleeAttackShape(self, position: tuple[int, int], targetPosition: tuple[int, int]) -> gridManager.GridShape:
 
         strDir = self.GetAbilityDirection(targetPosition, position)
 
+        shapeToUse = []
         if strDir == "UP":
-            return gridManager.GridShape(self.shapeUp, self.shapeColor, position)
+            shapeToUse = self.shapeUp
         elif strDir == "DOWN":
-            return gridManager.GridShape(self.shapeDown, self.shapeColor, position)
+            shapeToUse = self.shapeDown
         elif strDir == "LEFT":
-            return gridManager.GridShape(self.shapeLeft, self.shapeColor, position)
+            shapeToUse = self.shapeLeft
         elif strDir == "RIGHT":
-            return gridManager.GridShape(self.shapeRight, self.shapeColor, position)
+            shapeToUse = self.shapeRight
+        
+        shapePositions = gridManager.GetShapePositions(shapeToUse,position)
+        return gridManager.GridShape(shapePositions, self.shapeColor)
 
 
 class RangedAbility(Ability):
@@ -141,32 +145,39 @@ class RangedAbility(Ability):
         self.zoneColor = zoneColor
         self.AOEColor = AOEColor
 
-    def GetPlayerPreviewShapes(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> list[gridManager.GridShape]:
-        return [gridManager.GridShape(self.zoneShape, self.zoneColor, playerPosition), self.GetPlayerAOEShape(playerPosition, mousePositon)]
+    def GetPlayerPreviewShapes(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int], entityPositions: list[tuple[int, int]]) -> list[gridManager.GridShape]:
+        zoneShape = self.GetZoneShape(playerPosition, entityPositions)
+        return [zoneShape, self.GetAOEShape(zoneShape,playerPosition, mousePositon, entityPositions)]
 
-    def GetPlayerAttackShape(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int]) -> gridManager.GridShape:
-        return self.GetPlayerAOEShape(playerPosition, mousePositon)
+    def GetPlayerAttackShape(self, playerPosition: tuple[int, int], mousePositon: tuple[int, int], entityPositions: list[tuple[int, int]]) -> gridManager.GridShape:
+        zoneShape = self.GetZoneShape(playerPosition, entityPositions)
+        return self.GetAOEShape(zoneShape,playerPosition, mousePositon, entityPositions)
 
-    def GetEnemyAttackShape(self, enemyPositon: tuple[int, int], playerPosition: tuple[int, int]) -> gridManager.GridShape:
-        return self.GetPlayerAOEShape(enemyPositon, playerPosition)
+    def GetEnemyAttackShape(self, enemyPositon: tuple[int, int], playerPosition: tuple[int, int], entityPositions: list[tuple[int, int]]) -> gridManager.GridShape:
+        zoneShape = self.GetZoneShape(enemyPositon, entityPositions)
+        return self.GetAOEShape(zoneShape,enemyPositon, playerPosition, entityPositions)
+    
+    def GetZoneShape(self, position: tuple[int, int], entityPositions: list[tuple[int, int]]) -> gridManager.GridShape:
+        return gridManager.GridShape(gridManager.GetShapePositions(self.zoneShape, position),self.zoneColor)
 
-    def GetPlayerAOEShape(self, position: tuple[int, int], targetPosition: tuple[int, int]) -> gridManager.GridShape:
+    def GetAOEShape(self,zoneShape : gridManager.GridShape, position: tuple[int, int], targetPosition: tuple[int, int], entityPositions: list[tuple[int, int]]) -> gridManager.GridShape:
         """Retourne la forme de l'AOE de l'attaque d'un joueur en fonction de la position du joueur et de la position de la souris"""
 
         # get closest AOE position to mouse in zone
-        zonePositons = gridManager.GetShapePositions(
-            self.zoneShape, position)
 
         closestPositonIndex = 0
         smallestDistanceNorm = 9999999
-        for i in range(len(zonePositons)):
-            direction = (targetPosition[0] - zonePositons[i][0],
-                         targetPosition[1] - zonePositons[i][1])
+        for i in range(len(zoneShape.shapePositions)):
+            direction = (targetPosition[0] - zoneShape.shapePositions[i][0],
+                         targetPosition[1] - zoneShape.shapePositions[i][1])
             distanceNorm = math.sqrt(sum(j**2 for j in direction))
             if distanceNorm < smallestDistanceNorm:
                 smallestDistanceNorm = distanceNorm
                 closestPositonIndex = i
-        return gridManager.GridShape(self.AOEShape, self.AOEColor, zonePositons[closestPositonIndex])
+        
+        shapePositions = gridManager.GetShapePositions(
+            self.AOEShape, zoneShape.shapePositions[closestPositonIndex])
+        return gridManager.GridShape(shapePositions, self.AOEColor)
 
 
 class MovementAbility(RangedAbility):
@@ -179,7 +190,33 @@ class MovementAbility(RangedAbility):
                          zoneColor, targetColor, applyAttackAnimAdvancement, cooldown, idleAbilityIcon, hoverAbilityIcon, clickedAbilityIcon)
 
     def OnAbilityAttackApplied(self, entity, shape: gridManager.GridShape, direction: str) -> None:
-        shapePositions = gridManager.GetShapePositions(
-            shape.shape, shape.position + entity.gridPosition)
-        newPos = shapePositions[random.randint(0, len(shapePositions)-1)]
+        newPos = random.choice(shape.shapePositions)
         entity.gridPosition = newPos
+    
+    def GetZoneShape(self, position: tuple[int, int], entityPositions: list[tuple[int, int]]) -> gridManager.GridShape:
+        newZone = gridManager.GetShapePositions(self.zoneShape, position)
+
+        for entityPosition in entityPositions:
+            if entityPosition in newZone:
+                newZone.remove(entityPosition)
+
+        return gridManager.GridShape(newZone, self.zoneColor)
+    
+    def GetAOEShape(self, zoneShape: gridManager.GridShape, position: tuple[int, int], targetPosition: tuple[int, int], entityPositions: list[tuple[int, int]]) -> gridManager.GridShape:
+        """Retourne la forme de l'AOE de l'attaque d'un joueur en fonction de la position du joueur et de la position de la souris"""
+
+        # get closest AOE position to mouse in zone
+
+        closestPositonIndex = 0
+        smallestDistanceNorm = 9999999
+        for i in range(len(zoneShape.shapePositions)):
+            direction = (targetPosition[0] - zoneShape.shapePositions[i][0],
+                         targetPosition[1] - zoneShape.shapePositions[i][1])
+            distanceNorm = math.sqrt(sum(j**2 for j in direction))
+            if distanceNorm < smallestDistanceNorm:
+                smallestDistanceNorm = distanceNorm
+                closestPositonIndex = i
+
+        shapePositions = gridManager.GetShapePositions(
+            self.AOEShape, zoneShape.shapePositions[closestPositonIndex])
+        return gridManager.GridShape(shapePositions, self.AOEColor)
