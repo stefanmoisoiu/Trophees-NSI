@@ -86,6 +86,7 @@ class Entity:
         if self.properties.abilities[-1].currentCooldown > 0:
             self.properties.abilities[-1].ReduceAbilityCooldown()
             return None
+
         return self.properties.abilities[-1]
 
 def CreatePlayer(playerProperties : EntityProperties, gridPosition : tuple[int,int]):
