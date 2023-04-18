@@ -23,8 +23,7 @@ clock = pygame.time.Clock()
 player = entity.CreatePlayer(
     playerClasses.playerProperties,(4,4))
 
-events.onLeftClick.append(lambda: combatManager.SetupAndPlayTurns(
-    [x[0] for x in enemyList], player[0], player[2], mouseGridPos))
+events.onLeftClick.append(lambda: combatManager.SetupAndPlayTurns(mouseGridPos))
 
 goblin = entity.CreateEnemy(enemies.goblinProperties,(3,5))
 mageTest = entity.CreateEnemy(enemies.mageTestProperties, (3, 5))
@@ -41,6 +40,9 @@ def gameLoop():
     running = True
     '''Boucle du jeu'''
     while running:
+        entity.SetEntities([x[0] for x in enemyList] + [player[0]])
+        entity.SetEnemies(enemyList)
+        entity.SetPlayer(player)
 
         # region Setup:Events,variables,etc...
         global mouseGridPos

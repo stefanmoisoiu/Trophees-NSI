@@ -2,13 +2,13 @@ from Entities.entity import Entity
 from Combat.ability import Ability
 import Base.gridManager as gridManager
 import Effects.textPopup as textPopup
+import Entities.entity as entity
 
-entities: list[Entity] = []
-entityPositions : list[tuple[int,int]] = []
-turnsLeft: list[Entity, Ability, gridManager.GridShape, str] = []
+turnsLeft = []
 currentTurnShape: gridManager.GridShape = None
 playingTurns: bool = False
-__player : Entity = None
+
+__entitiesInTurn: list[Entity]
 
 onStartPlayingTurns: callable = []
 onEndPlayingTurns: callable = []
@@ -69,53 +69,50 @@ def DealDamage(entities: list[Entity], ability: Ability, shape: gridManager.Grid
                     damageToApply, (entity.rect.centerx, entity.rect.top))
 
 
-def SetupAndPlayTurns(enemies: list[Entity], player: Entity, playerAbilitiesUI,mouseGridPos:tuple[int,int]):
-    if playingTurns or playerAbilitiesUI.currentAbility is None or playerAbilitiesUI.ButtonHovered():
+def SetupAndPlayTurns(mouseGridPos:tuple[int,int]):
+    player = entity.GetPlayer()
+
+    if playingTurns or player[2].currentAbility is None or player[2].ButtonHovered():
         return
     
-    entities = enemies + [player]
-    entityPositions = [x.gridPosition for x in entities]
+    entityPositions = [x.gridPosition for x in entity.GetEntities()]
     
     # On calcule l'ability du joueur au debut
-    playerAbility = playerAbilitiesUI.currentAbility
 
-    playerAbilityDirection = playerAbility.GetAbilityDirection(
-        mouseGridPos, player.gridPosition)
-    playerAbilityShape = playerAbility.GetPlayerAttackShape(
-        player.gridPosition, mouseGridPos, entityPositions)
+    playerAbilityDirection = player[2].currentAbility.GetAbilityDirection(
+        mouseGridPos, player[0].gridPosition)
     
-    enemyTurns = enemies.copy()
+    playerAbilityShape = player[2].currentAbility.GetPlayerAttackShape(
+        player[0].gridPosition, mouseGridPos, entityPositions)
     
-    for i in range(len(enemies)):
-        enemyAbility = enemies[i].GetEnemyAbility(player.gridPosition, entityPositions)
+    enemyTurns = [x[0] for x in entity.GetEnemies()]
+    
+    for i in range(len(enemyTurns)):
+        enemyAbility = enemyTurns[i].GetEnemyAbility(
+            player[0].gridPosition, entityPositions)
 
         if enemyAbility is None:
             enemyTurns.pop(i)
         else:
-            enemyTurns[i] = (enemyTurns[i], enemyAbility)
+            enemyTurns[i] = (enemyTurns[i], enemyAbility,False)
     
-    PlayTurns(enemies + [player],
-              (player, playerAbility, playerAbilityDirection, playerAbilityShape), enemyTurns)
+    PlayTurns((player[0], player[2].currentAbility, True,
+              playerAbilityDirection, playerAbilityShape), enemyTurns)
 
 
-def PlayTurns(entitiesInTurn: list[Entity], playerTurn: tuple[Entity, Ability,str,gridManager.GridShape],
-              enemyTurns: list[tuple[Entity, Ability]]):
+def PlayTurns(playerTurn: tuple[Entity, Ability,bool,str,gridManager.GridShape],
+              enemyTurns: list[tuple[Entity,bool, Ability]]):
     '''Execute quand le joueur a fini de choisir son attaque'''
 
-    global turnsLeft, playingTurns, entities, entityPositions, __player
-
-    __player = playerTurn[0]
-
-    entities = entitiesInTurn.copy()
-    entityPositions = [x.gridPosition for x in entities]
-
+    global turnsLeft, playingTurns, __entitiesInTurn
 
     sortedTurns = [playerTurn] + enemyTurns
     # sort by speed
-    sortedTurns.sort(key=lambda entity: entity[1].GetSpeed())
+    sortedTurns.sort(key=lambda x: x[1].GetSpeed())
 
     playingTurns = True
     turnsLeft = sortedTurns
+    __entitiesInTurn = [x[0] for x in sortedTurns]
 
     for callback in onStartPlayingTurns:
         callback()
@@ -126,7 +123,7 @@ def PlayTurns(entitiesInTurn: list[Entity], playerTurn: tuple[Entity, Ability,st
 def ApplyTurnDamage(abilityShape : gridManager.GridShape, abilityDir : str):
     '''Execute quand l'attaque est appliquee : peut etre appele pendant l'animation a un avancement donne'''
 
-    DealDamage(entities, turnsLeft[-1][1], abilityShape)
+    DealDamage(__entitiesInTurn, turnsLeft[-1][1], abilityShape)
     turnsLeft[-1][1].OnAbilityAttackApplied(
         turnsLeft[-1][0],abilityShape, abilityDir)
 
@@ -140,6 +137,8 @@ def FinishedTurnAnimation(abilityShape: gridManager.GridShape, abilityDir: str):
 
     turnsLeft[-1][1].OnAbilityAnimationEnded(
         turnsLeft[-1][0], abilityShape, abilityDir)
+    
+    __entitiesInTurn[len(turnsLeft) - 1] = turnsLeft[-1][0]
     turnsLeft.pop()
 
     PlayNextTurn()
@@ -159,7 +158,7 @@ def StopPlayingTurns():
 def PlayNextTurn():
     '''Joue le tour de l'entite suivante'''
 
-    global turnsLeft, currentTurnShape,entities
+    global turnsLeft, currentTurnShape
 
     if len(turnsLeft) == 0:
         StopPlayingTurns()
@@ -168,16 +167,20 @@ def PlayNextTurn():
     abilityShape = None
     abilityDir = None
 
-    if (turnsLeft[-1][0]) is __player:
+    player = entity.GetPlayer()
+
+    if turnsLeft[-1][2] == True:
         # Joueur
-        abilityDir = turnsLeft[-1][2]
-        abilityShape = turnsLeft[-1][3]
+        abilityDir = turnsLeft[-1][3]
+        abilityShape = turnsLeft[-1][4]
+        print("AAAA")
     else:
         #Ennemi
         abilityDir = turnsLeft[-1][1].GetAbilityDirection(
-            __player.gridPosition, turnsLeft[-1][0].gridPosition)
+            player[0].gridPosition, turnsLeft[-1][0].gridPosition)
+        
         abilityShape = turnsLeft[-1][1].GetEnemyAttackShape(
-            turnsLeft[-1][0].gridPosition, __player.gridPosition, entityPositions)
+            turnsLeft[-1][0].gridPosition, player[0].gridPosition, [x.gridPosition for x in entity.GetEntities()])
 
     currentTurnShape = abilityShape
 

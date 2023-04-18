@@ -115,3 +115,28 @@ def __BindEntityFightAnimations(entity : Entity, entityProperties : EntityProper
     if entityProperties.deathAnimation is not None:
         entity.onDamage += entityProperties.animationManager.PlayAnimation(
             entityProperties.deathAnimation)
+
+
+__entities: list[Entity] = []
+__player: tuple[Entity, healthbar.Healthbar, PlayerAbilitiesUI] = None
+__enemies: list[tuple[Entity, healthbar.Healthbar]] = []
+
+def SetEntities(entities : list[Entity]):
+    global __entities
+    __entities = entities
+def GetEntities():
+    return __entities
+
+def SetPlayer(player : tuple[Entity,healthbar.Healthbar,PlayerAbilitiesUI]):
+    global __player
+    __player = player
+
+def GetPlayer():
+    return __player
+
+def SetEnemies(enemies : list[tuple[Entity,healthbar.Healthbar]]):
+    global __enemies
+    __enemies = enemies
+
+def GetEnemies():
+    return __enemies
