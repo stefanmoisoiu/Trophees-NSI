@@ -13,7 +13,7 @@ import Entities.playerClasses as playerClasses
 # region Window Setup
 pygame.init()
 
-screen = pygame.display.set_mode((800, 600), pygame.RESIZABLE)
+screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("Jeu de role")
 
 framerate: int = 60
@@ -26,7 +26,7 @@ player = entity.CreatePlayer(
 events.onLeftClick.append(lambda: combatManager.SetupAndPlayTurns(mouseGridPos))
 
 goblin = entity.CreateEnemy(enemies.goblinProperties,(3,5))
-mageTest = entity.CreateEnemy(enemies.mageTestProperties, (3, 5))
+mageTest = entity.CreateEnemy(enemies.mageTestProperties, (8, 5))
 
 # Tuple de Entity, Healthbar
 enemyList = [mageTest,goblin]
