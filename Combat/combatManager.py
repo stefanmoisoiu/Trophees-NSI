@@ -10,6 +10,8 @@ playingTurns: bool = False
 
 __entitiesInTurn: list[Entity]
 
+__startPlayerPos : tuple[int,int]
+
 onStartPlayingTurns: callable = []
 onEndPlayingTurns: callable = []
 
@@ -71,6 +73,8 @@ def DealDamage(entities: list[Entity], ability: Ability, shape: gridManager.Grid
 
 def SetupAndPlayTurns(mouseGridPos:tuple[int,int]):
     player = entity.GetPlayer()
+    global __startPlayerPos
+    __startPlayerPos = (player[0].gridPosition[0], player[0].gridPosition[1])
 
     if playingTurns or player[2].currentAbility is None or player[2].ButtonHovered():
         return
@@ -173,14 +177,19 @@ def PlayNextTurn():
         # Joueur
         abilityDir = turnsLeft[-1][3]
         abilityShape = turnsLeft[-1][4]
-        print("AAAA")
     else:
         #Ennemi
+
+        if turnsLeft[-1][1].enemyPredictPlayerAbility:
+            playerPosition = player[0].gridPosition
+        else:
+            playerPosition = __startPlayerPos
+        
         abilityDir = turnsLeft[-1][1].GetAbilityDirection(
-            player[0].gridPosition, turnsLeft[-1][0].gridPosition)
+            playerPosition, turnsLeft[-1][0].gridPosition)
         
         abilityShape = turnsLeft[-1][1].GetEnemyAttackShape(
-            turnsLeft[-1][0].gridPosition, player[0].gridPosition, [x.gridPosition for x in entity.GetEntities()])
+            turnsLeft[-1][0].gridPosition, playerPosition, [x.gridPosition for x in entity.GetEntities()])
 
     currentTurnShape = abilityShape
 

@@ -55,6 +55,6 @@ __mageTestAbility = RangedAbility(damageRange=(3, 6), abilitySpeedRange=(1, 3), 
                                              "  FFF  ",
                                              "   F   "], zoneColor=(100, 0, 0),
                                   AOEShape=["F"], AOEColor=(255, 0, 0),
-                                  applyAttackAnimAdvancement=.5, cooldown=2)
+                                  applyAttackAnimAdvancement=.5, cooldown=2,enemyPredictPlayerAbility=False)
 mageTestProperties = EntityProperties("Mage Test","Test", 5, [__mageTestAbility,__golbinMoveAbility], __mageTestAnim)
 #endregion
