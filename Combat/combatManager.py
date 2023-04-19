@@ -5,7 +5,7 @@ import Effects.textPopup as textPopup
 import Entities.entity as entity
 
 turnsLeft = []
-currentTurnShape: gridManager.GridShape = None
+currentTurn : tuple[Entity,Ability,bool,gridManager.GridShape]
 playingTurns: bool = False
 
 __entitiesInTurn: list[Entity]
@@ -136,7 +136,7 @@ def FinishedTurnAnimation(abilityShape: gridManager.GridShape, abilityDir: str):
     '''Execute quand l'animation de l'entite est finie'''
 
     print("Finished animation. Next Turn")
-    turnsLeft[-1][0].properties.animationManager.PlayAnimation(
+    turnsLeft[-1][0].animationManager.PlayAnimation(
         turnsLeft[-1][0].properties.idleAnimation)
 
     turnsLeft[-1][1].OnAbilityAnimationEnded(
@@ -162,7 +162,7 @@ def StopPlayingTurns():
 def PlayNextTurn():
     '''Joue le tour de l'entite suivante'''
 
-    global turnsLeft, currentTurnShape
+    global turnsLeft, currentTurn
 
     if len(turnsLeft) == 0:
         StopPlayingTurns()
@@ -191,9 +191,9 @@ def PlayNextTurn():
         abilityShape = turnsLeft[-1][1].GetEnemyAttackShape(
             turnsLeft[-1][0].gridPosition, playerPosition, [x.gridPosition for x in entity.GetEntities()])
 
-    currentTurnShape = abilityShape
+    currentTurn = (turnsLeft[-1][0], turnsLeft[-1][1], turnsLeft[-1][2],abilityShape)
 
-    turnsLeft[-1][0].properties.animationManager.PlayAnimation(
+    turnsLeft[-1][0].animationManager.PlayAnimation(
         turnsLeft[-1][1].GetAnimation(abilityDir), [(lambda: ApplyTurnDamage(abilityShape, abilityDir), turnsLeft[-1][1].applyAttackAnimAdvancement),
                                                     (lambda: FinishedTurnAnimation(abilityShape, abilityDir), 1)])
 
@@ -205,10 +205,17 @@ def AddTurnShapes():
     '''Ajoute les shapes de l'entite suivante'''
     if not playingTurns:
         return
-    if currentTurnShape is not None:
-        gridManager.AddShape(currentTurnShape)
+    if currentTurn is not None:
+        gridManager.AddShape(currentTurn[3])
 
 
 def ResetWaitingForPopupEnd():
     global waitingForPopupEnd
     waitingForPopupEnd = False
+
+def TryRemoveEnemyFromTurn(enemy : Entity):
+    if enemy in __entitiesInTurn:
+        __entitiesInTurn.remove(enemy)
+    if playingTurns and currentTurn is not None and currentTurn[0] == enemy:
+        PlayNextTurn()
+

@@ -165,6 +165,9 @@ class RangedAbility(Ability):
     def GetAOEShape(self,zoneShape : gridManager.GridShape, position: tuple[int, int], targetPosition: tuple[int, int], entityPositions: list[tuple[int, int]]) -> gridManager.GridShape:
         """Retourne la forme de l'AOE de l'attaque d'un joueur en fonction de la position du joueur et de la position de la souris"""
 
+        if zoneShape.shapePositions == []:
+            return None
+
         # get closest AOE position to mouse in zone
 
         closestPositonIndex = 0
@@ -193,6 +196,8 @@ class MovementAbility(RangedAbility):
                          zoneColor, targetColor, applyAttackAnimAdvancement, cooldown, enemyPredictPlayerAbility, idleAbilityIcon, hoverAbilityIcon, clickedAbilityIcon)
 
     def OnAbilityAttackApplied(self, entity, shape: gridManager.GridShape, direction: str) -> None:
+        if shape is None or shape.shapePositions is None or shape.color is None:
+            return
         newPos = random.choice(shape.shapePositions)
         entity.gridPosition = newPos
     
@@ -204,22 +209,3 @@ class MovementAbility(RangedAbility):
                 newZone.remove(entityPosition)
 
         return gridManager.GridShape(newZone, self.zoneColor)
-    
-    def GetAOEShape(self, zoneShape: gridManager.GridShape, position: tuple[int, int], targetPosition: tuple[int, int], entityPositions: list[tuple[int, int]]) -> gridManager.GridShape:
-        """Retourne la forme de l'AOE de l'attaque d'un joueur en fonction de la position du joueur et de la position de la souris"""
-
-        # get closest AOE position to mouse in zone
-
-        closestPositonIndex = 0
-        smallestDistanceNorm = 9999999
-        for i in range(len(zoneShape.shapePositions)):
-            direction = (targetPosition[0] - zoneShape.shapePositions[i][0],
-                         targetPosition[1] - zoneShape.shapePositions[i][1])
-            distanceNorm = math.sqrt(sum(j**2 for j in direction))
-            if distanceNorm < smallestDistanceNorm:
-                smallestDistanceNorm = distanceNorm
-                closestPositonIndex = i
-
-        shapePositions = gridManager.GetShapePositions(
-            self.AOEShape, zoneShape.shapePositions[closestPositonIndex])
-        return gridManager.GridShape(shapePositions, self.AOEColor)

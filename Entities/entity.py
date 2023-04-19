@@ -19,8 +19,6 @@ class EntityProperties:
         self.deathAnimation = deathAnimation
         self.onDamageAnimation = onDamageAnimation
 
-        self.animationManager = AnimationManager()
-        self.animationManager.PlayAnimation(self.idleAnimation)
         self.abilities = abilities
 
 
@@ -30,6 +28,10 @@ class Entity:
     def __init__(self, properties: EntityProperties, gridPosition: tuple[int, int] = (0, 0)) -> None:
         self.properties = properties
         self.gridPosition = gridPosition
+
+        self.animationManager = AnimationManager()
+        self.animationManager.PlayAnimation(self.properties.idleAnimation)
+
         self.rect = pygame.Rect(
             gridPosition[0] * gridManager.gridPixelSize, gridPosition[1] * gridManager.gridPixelSize, gridManager.gridPixelSize, gridManager.gridPixelSize)
         self.health = self.properties.startHealth
@@ -52,19 +54,28 @@ class Entity:
             callback()
         
         if self.health == 0:
-            for callback in self.onDeath:
-                callback(self)
+            if self.properties.deathAnimation is None:
+                self.__OnDeath()
+            else:
+                self.animationManager.PlayAnimation(self.properties.deathAnimation,[(self.__OnDeath,1)])
+
+                
+    
+    def __OnDeath(self):
+        for callback in self.onDeath:
+            callback(self)
+                
 
     def Display(self, screen) -> None:
         '''Affiche l'entite sur l'ecran'''
 
-        self.properties.animationManager.Display(
+        self.animationManager.Display(
             screen, self.rect.topleft)
 
     def Update(self, deltaTime: float) -> None:
         '''Met a jour l'entite, ex: animation, position, etc...'''
 
-        self.properties.animationManager.Update(deltaTime)
+        self.animationManager.Update(deltaTime)
         self.rect.topleft = gridManager.GetWorldPosition(self.gridPosition)
 
     def GetEnemyAbility(self, playerPosition: tuple[int, int], entityPositions : list[tuple[int,int]]) -> Ability:
@@ -100,8 +111,11 @@ def CreatePlayer(playerProperties : EntityProperties, gridPosition : tuple[int,i
 
     return (player,playerHealthbar,playerAbilitiesUI)
 
-def CreateEnemy(enemyProperties: EntityProperties, gridPosition: tuple[int, int]):
+def CreateEnemy(enemyProperties: EntityProperties, gridPosition: tuple[int, int],onDeathCallback = None):
     enemy = Entity(enemyProperties, gridPosition=gridPosition)
+
+    if onDeathCallback is not None:
+        enemy.onDeath.append(onDeathCallback)
 
     enemyHealthbar = healthbar.CreateEntityHealthbar(enemy)
     __BindEntityFightAnimations(enemy, enemyProperties)
