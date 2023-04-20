@@ -22,7 +22,6 @@ def DebugTurns():
     '''Affiche les turns en cours'''
     print("---Debug Turns---")
     invertedTurns = turnsLeft.copy()
-    invertedTurns.reverse()
     for i in range(len(turnsLeft)):
         print(
             f"{i+1} : {turnsLeft[i][0].properties.name} is attacking with ability shape:")
@@ -113,6 +112,7 @@ def PlayTurns(playerTurn: tuple[Entity, Ability,bool,str,gridManager.GridShape],
     sortedTurns = [playerTurn] + enemyTurns
     # sort by speed
     sortedTurns.sort(key=lambda x: x[1].GetSpeed())
+    sortedTurns.reverse()
 
     playingTurns = True
     turnsLeft = sortedTurns
@@ -127,23 +127,23 @@ def PlayTurns(playerTurn: tuple[Entity, Ability,bool,str,gridManager.GridShape],
 def ApplyTurnDamage(abilityShape : gridManager.GridShape, abilityDir : str):
     '''Execute quand l'attaque est appliquee : peut etre appele pendant l'animation a un avancement donne'''
 
-    DealDamage(__entitiesInTurn, turnsLeft[-1][1], abilityShape)
-    turnsLeft[-1][1].OnAbilityAttackApplied(
-        turnsLeft[-1][0],abilityShape, abilityDir)
+    DealDamage(__entitiesInTurn, turnsLeft[0][1], abilityShape)
+    turnsLeft[0][1].OnAbilityAttackApplied(
+        turnsLeft[0][0],abilityShape, abilityDir)
 
 
 def FinishedTurnAnimation(abilityShape: gridManager.GridShape, abilityDir: str):
     '''Execute quand l'animation de l'entite est finie'''
 
     print("Finished animation. Next Turn")
-    turnsLeft[-1][0].animationManager.PlayAnimation(
-        turnsLeft[-1][0].properties.idleAnimation)
+    turnsLeft[0][0].animationManager.PlayAnimation(
+        turnsLeft[0][0].properties.idleAnimation)
 
-    turnsLeft[-1][1].OnAbilityAnimationEnded(
-        turnsLeft[-1][0], abilityShape, abilityDir)
+    turnsLeft[0][1].OnAbilityAnimationEnded(
+        turnsLeft[0][0], abilityShape, abilityDir)
     
-    __entitiesInTurn[len(turnsLeft) - 1] = turnsLeft[-1][0]
-    turnsLeft.pop()
+    # __entitiesInTurn[0] = turnsLeft[0][0]
+    turnsLeft.pop(0)
 
     PlayNextTurn()
 
@@ -173,32 +173,32 @@ def PlayNextTurn():
 
     player = entity.GetPlayer()
 
-    if turnsLeft[-1][2] == True:
+    if turnsLeft[0][2] == True:
         # Joueur
-        abilityDir = turnsLeft[-1][3]
-        abilityShape = turnsLeft[-1][4]
+        abilityDir = turnsLeft[0][3]
+        abilityShape = turnsLeft[0][4]
     else:
         #Ennemi
 
-        if turnsLeft[-1][1].enemyPredictPlayerAbility:
+        if turnsLeft[0][1].enemyPredictPlayerAbility:
             playerPosition = player[0].gridPosition
         else:
             playerPosition = __startPlayerPos
         
-        abilityDir = turnsLeft[-1][1].GetAbilityDirection(
-            playerPosition, turnsLeft[-1][0].gridPosition)
+        abilityDir = turnsLeft[0][1].GetAbilityDirection(
+            playerPosition, turnsLeft[0][0].gridPosition)
         
-        abilityShape = turnsLeft[-1][1].GetEnemyAttackShape(
-            turnsLeft[-1][0].gridPosition, playerPosition, [x.gridPosition for x in entity.GetEntities()])
+        abilityShape = turnsLeft[0][1].GetEnemyAttackShape(
+            turnsLeft[0][0].gridPosition, playerPosition, [x.gridPosition for x in entity.GetEntities()])
 
-    currentTurn = (turnsLeft[-1][0], turnsLeft[-1][1], turnsLeft[-1][2],abilityShape)
+    currentTurn = (turnsLeft[0][0], turnsLeft[0][1], turnsLeft[0][2],abilityShape)
 
-    turnsLeft[-1][0].animationManager.PlayAnimation(
-        turnsLeft[-1][1].GetAnimation(abilityDir), [(lambda: ApplyTurnDamage(abilityShape, abilityDir), turnsLeft[-1][1].applyAttackAnimAdvancement),
+    turnsLeft[0][0].animationManager.PlayAnimation(
+        turnsLeft[0][1].GetAnimation(abilityDir), [(lambda: ApplyTurnDamage(abilityShape, abilityDir), turnsLeft[0][1].applyAttackAnimAdvancement),
                                                     (lambda: FinishedTurnAnimation(abilityShape, abilityDir), 1)])
 
-    turnsLeft[-1][1].OnAbilityAnimationStarted(
-        turnsLeft[-1][0], abilityShape, abilityDir)
+    turnsLeft[0][1].OnAbilityAnimationStarted(
+        turnsLeft[0][0], abilityShape, abilityDir)
 
 
 def AddTurnShapes():
@@ -214,8 +214,19 @@ def ResetWaitingForPopupEnd():
     waitingForPopupEnd = False
 
 def TryRemoveEnemyFromTurn(enemy : Entity):
+    if not playingTurns:
+        return
+    
+    print("TryRemoveEnemyFromTurn")
     if enemy in __entitiesInTurn:
+        print("found dead enemy")
         __entitiesInTurn.remove(enemy)
-    if playingTurns and currentTurn is not None and currentTurn[0] == enemy:
+        for i in range(len(turnsLeft)):
+            if turnsLeft[i][0] == enemy:
+                turnsLeft.pop(i)
+                print("found dead enemy in turns left")
+                return
+    if currentTurn is not None and currentTurn[0] == enemy:
+        print("dead enemy's turn was this one")
         PlayNextTurn()
 

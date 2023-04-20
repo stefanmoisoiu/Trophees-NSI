@@ -34,6 +34,7 @@ def EnemyDied(enemy):
     for i in range(len(enemyList)):
         if enemyList[i][0] == enemy:
             enemyList.pop(i)
+            combatManager.TryRemoveEnemyFromTurn(enemy)
             return
 
 

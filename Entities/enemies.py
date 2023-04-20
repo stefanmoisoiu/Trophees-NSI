@@ -39,7 +39,7 @@ __golbinMoveAbility = MovementAbility(abilitySpeedRange=(0, 6),
                                       upAnimation=__goblinMoveRightAnimation, downAnimation=__goblinMoveRightAnimation, leftAnimation=__goblinMoveLeftAnimation, rightAnimation=__goblinMoveLeftAnimation,
                                       zoneShape=__goblinMoveZoneShape, zoneColor=(0, 0, 100), targetColor=(0, 0, 255), applyAttackAnimAdvancement=.7,cooldown=1)
 goblinProperties = EntityProperties(
-    "Goblin", "A goblin", 5, [__golbinAttackAbility, __golbinMoveAbility], __goblinIdleAnimation)
+    "Goblin", "A goblin", 1, [__golbinAttackAbility, __golbinMoveAbility], __goblinIdleAnimation)
 #endregion
 # region Mage Test
 

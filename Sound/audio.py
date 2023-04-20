@@ -11,18 +11,20 @@ def PlaySound(sound : pygame.mixer.Sound):
     sound.play()
 
 def PlayFromSoundList(soundList: list[pygame.mixer.Sound]):
+    if soundList is None or len(soundList) == 0:
+        return
     PlaySound(random.choice(soundList))
 
 
 def PlayMusic(musicPath : str):
+    if musicPath is None or musicPath == "":
+        return
 
-    if not pygame.mixer.music.get_busy():
-        pygame.mixer.music.load(musicPath)
-        pygame.mixer.music.play(-1)
-    else:
+    if pygame.mixer.music.get_busy():
         pygame.mixer.music.fadeout(int(__fadeDuration * 1000))
-        pygame.mixer.music.load(musicPath)
-        pygame.mixer.music.play(-1)
+    
+    pygame.mixer.music.load(musicPath)
+    pygame.mixer.music.play(-1)
 
 def StopPlayingMusic():
 
