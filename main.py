@@ -9,6 +9,8 @@ import Entities.entity as entity
 import Entities.enemies as enemies
 import Entities.playerClasses as playerClasses
 
+import Sound.audio as audio
+audio.PlayMusic("Sound/Music/botw.mp3")
 
 # region Window Setup
 pygame.init()
@@ -23,7 +25,8 @@ clock = pygame.time.Clock()
 player = entity.CreatePlayer(
     playerClasses.playerProperties,(4,4))
 
-events.onLeftClick.append(lambda: combatManager.SetupAndPlayTurns(mouseGridPos))
+events.onLeftClick.append(
+    lambda: combatManager.SetupAndPlayTurns(mouseGridPos))
 
 
 def EnemyDied(enemy):
