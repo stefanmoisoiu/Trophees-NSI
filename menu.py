@@ -1,9 +1,7 @@
 import pygame
 import math
 
-from UI.button import Button
-from main import gameLoop
-
+from main import *
 
 screen = pygame.display.set_mode((800, 600), pygame.RESIZABLE)
 pygame.display.set_caption("Jeu de role")
@@ -27,7 +25,7 @@ button_arrow_rect = button_arrow.get_rect()
 
 
 state: str = "Menu"
-running: bool = False
+running: bool = True
 
 
 def menu_draw():
@@ -89,13 +87,15 @@ def setting():
         pygame.display.flip()
 
 
-if state == "Menu":
-    menu()
-elif state == "Setting":
-    setting()
-elif state == "Game":
-    print("Game")
-    running = True
-    gameLoop(running)
-else:
-    print("Error")
+while running:
+    if state == "Menu":
+        menu()
+    elif state == "Setting":
+        setting()
+    elif state == "Game":
+        print("Game")
+        running = False
+        gameLoop(True)
+    else:
+        print("Error")
+        running = False

@@ -48,8 +48,7 @@ mageTest = entity.CreateEnemy(enemies.mageTestProperties, (8, 5), EnemyDied)
 enemyList = [mageTest, goblin1, goblin2, goblin3, goblin4]
 
 # region Game Loop
-def gameLoop():
-    running = True
+def gameLoop(running: bool):
     '''Boucle du jeu'''
     while running:
         entity.SetEntities([x[0] for x in enemyList] + [player[0]])
@@ -102,5 +101,5 @@ def gameLoop():
         pygame.display.flip()
 
 
-loop = gameLoop()
+
 # endregion
