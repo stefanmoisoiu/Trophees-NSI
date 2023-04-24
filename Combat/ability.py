@@ -12,7 +12,8 @@ class Ability:
 
     def __init__(self, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int], missChance: float,
                  upAnimation: Animation, downAnimation: Animation, leftAnimation: Animation, rightAnimation: Animation,
-                 damageSounds : pygame.mixer.Sound = [], applyAttackAnimAdvancement: float = 1,cooldown:int = 0, enemyPredictPlayerAbility : bool = True,
+                 applyAttackAnimAdvancement: float = 1,cooldown:int = 0, enemyPredictPlayerAbility : bool = True,
+                 startAnimSounds: pygame.mixer.Sound = [], abilityAppliedSounds: pygame.mixer.Sound = [], endAnimSounds: pygame.mixer.Sound = [],
                  idleAbilityIcon: pygame.Surface = None, hoverAbilityIcon: pygame.Surface = None, clickedAbilityIcon: pygame.Surface = None) -> None:
         # Damage range: =0,0 no damage, >0,0 damage, <0,0 heal
         self.upAnimation = upAnimation
@@ -24,7 +25,9 @@ class Ability:
         self.abilitySpeedRange = abilitySpeedRange
         self.missChance = missChance
 
-        self.damageSounds = damageSounds
+        self.startAnimSounds = startAnimSounds
+        self.abilityAppliedSounds = abilityAppliedSounds
+        self.endAnimSounds = endAnimSounds
 
         self.applyAttackAnimAdvancement = applyAttackAnimAdvancement
 
@@ -62,17 +65,14 @@ class Ability:
         '''Retourne la forme de l'attaque d'un joueur en fonction de la position du joueur et de la position de la souris'''
         pass
 
-    def PlayDamageSounds(self):
-        audio.PlayFromSoundList(self.damageSounds)
-
     def OnAbilityAnimationStarted(self, entity, shape: gridManager.GridShape, direction: str) -> None:
-        pass
+        audio.PlayFromSoundList(self.startAnimSounds)
 
     def OnAbilityAnimationEnded(self, entity, shape: gridManager.GridShape, direction: str) -> None:
-        pass
+        audio.PlayFromSoundList(self.endAnimSounds)
 
     def OnAbilityAttackApplied(self, entity, shape: gridManager.GridShape, direction: str) -> None:
-        self.PlayDamageSounds()
+        audio.PlayFromSoundList(self.abilityAppliedSounds)
 
     def ReduceAbilityCooldown(self) -> None:
         self.currentCooldown -= 1
@@ -102,10 +102,11 @@ class MeleeAbility(Ability):
     def __init__(self, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int], missChance: float,
                  upAnimation: Animation, downAnimation: Animation, leftAnimation: Animation, rightAnimation: Animation,
                  shapeUp: list[str], shapeDown: list[str], shapeLeft: list[str], shapeRight: list[str],
-                 shapeColor: tuple[int, int, int], damageSounds: pygame.mixer.Sound = [], applyAttackAnimAdvancement: float = 1, cooldown: int = 0, enemyPredictPlayerAbility: bool = True,
+                 shapeColor: tuple[int, int, int], applyAttackAnimAdvancement: float = 1, cooldown: int = 0, enemyPredictPlayerAbility: bool = True,
+                 startAnimSounds: pygame.mixer.Sound = [], abilityAppliedSounds: pygame.mixer.Sound = [], endAnimSounds: pygame.mixer.Sound = [],
                  idleAbilityIcon: pygame.Surface = None, hoverAbilityIcon: pygame.Surface = None, clickedAbilityIcon: pygame.Surface = None):
         super().__init__(damageRange, abilitySpeedRange, missChance, upAnimation, downAnimation, leftAnimation, rightAnimation,
-                         damageSounds,applyAttackAnimAdvancement, cooldown, enemyPredictPlayerAbility, idleAbilityIcon, hoverAbilityIcon, clickedAbilityIcon)
+                         applyAttackAnimAdvancement, cooldown, enemyPredictPlayerAbility, startAnimSounds, abilityAppliedSounds, endAnimSounds, idleAbilityIcon, hoverAbilityIcon, clickedAbilityIcon)
         self.shapeUp = shapeUp
         self.shapeDown = shapeDown
         self.shapeLeft = shapeLeft
@@ -145,11 +146,12 @@ class RangedAbility(Ability):
     def __init__(self, damageRange: tuple[int, int], abilitySpeedRange: tuple[int, int], missChance: float,
                  upAnimation: Animation, downAnimation: Animation, leftAnimation: Animation, rightAnimation: Animation,
                  zoneShape: list[str], AOEShape: list[str], zoneColor: tuple[int, int, int], AOEColor: tuple[int, int, int],
-                 damageSounds: pygame.mixer.Sound = [], applyAttackAnimAdvancement: float = 1, cooldown: int = 0, enemyPredictPlayerAbility: bool = True,
+                 applyAttackAnimAdvancement: float = 1, cooldown: int = 0, enemyPredictPlayerAbility: bool = True,
+                 startAnimSounds: pygame.mixer.Sound = [], abilityAppliedSounds: pygame.mixer.Sound = [], endAnimSounds: pygame.mixer.Sound = [],
                  idleAbilityIcon: pygame.Surface = None, hoverAbilityIcon: pygame.Surface = None, clickedAbilityIcon: pygame.Surface = None):
 
         super().__init__(damageRange, abilitySpeedRange, missChance, upAnimation, downAnimation, leftAnimation, rightAnimation,
-                         damageSounds,applyAttackAnimAdvancement, cooldown, enemyPredictPlayerAbility, idleAbilityIcon, hoverAbilityIcon, clickedAbilityIcon)
+                         applyAttackAnimAdvancement, cooldown, enemyPredictPlayerAbility, startAnimSounds,abilityAppliedSounds, endAnimSounds, idleAbilityIcon, hoverAbilityIcon, clickedAbilityIcon)
         self.zoneShape = zoneShape
         self.AOEShape = AOEShape
         self.zoneColor = zoneColor
@@ -197,14 +199,15 @@ class MovementAbility(RangedAbility):
     def __init__(self, abilitySpeedRange: tuple[int, int],
                  upAnimation: Animation, downAnimation: Animation, leftAnimation: Animation, rightAnimation: Animation,
                  zoneShape: list[str], zoneColor: tuple[int, int, int], targetColor: tuple[int, int, int],
-                 damageSounds: pygame.mixer.Sound = [], applyAttackAnimAdvancement: float = 1, cooldown: int = 0, enemyPredictPlayerAbility: bool = True,
+                 applyAttackAnimAdvancement: float = 1, cooldown: int = 0, enemyPredictPlayerAbility: bool = True,
+                 startAnimSounds: pygame.mixer.Sound = [], abilityAppliedSounds: pygame.mixer.Sound = [], endAnimSounds: pygame.mixer.Sound = [],
                  idleAbilityIcon: pygame.Surface = None, hoverAbilityIcon: pygame.Surface = None, clickedAbilityIcon: pygame.Surface = None):
 
         super().__init__((0, 0), abilitySpeedRange, 0, upAnimation, downAnimation, leftAnimation, rightAnimation, zoneShape, ["F"],
-                         zoneColor, targetColor, damageSounds, applyAttackAnimAdvancement, cooldown, enemyPredictPlayerAbility, idleAbilityIcon, hoverAbilityIcon, clickedAbilityIcon)
+                         zoneColor, targetColor,  applyAttackAnimAdvancement, cooldown, enemyPredictPlayerAbility, startAnimSounds, abilityAppliedSounds, endAnimSounds, idleAbilityIcon, hoverAbilityIcon, clickedAbilityIcon)
 
     def OnAbilityAttackApplied(self, entity, shape: gridManager.GridShape, direction: str) -> None:
-        self.PlayDamageSounds()
+        super().OnAbilityAttackApplied(entity, shape, direction)
 
         if shape is None or shape.shapePositions is None or shape.color is None:
             return

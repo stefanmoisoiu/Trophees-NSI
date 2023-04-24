@@ -2,6 +2,7 @@ import pygame
 from Base.animation import Animation
 from Combat.ability import MeleeAbility, MovementAbility, RangedAbility
 from Entities.entity import EntityProperties
+import Sound.sounds as sounds
 
 
 __swordAttackIdleImage = pygame.image.load(
@@ -38,7 +39,7 @@ __playerMeleeRightShape = ["CFF"]
 __playerMeleeTestAbility = MeleeAbility(damageRange=(1, 3), abilitySpeedRange=(3, 7), missChance=.1,
                                         upAnimation=__playerMeleeUpAnimation, downAnimation=__playerMeleeDownAnimation, leftAnimation=__playerMeleeLeftAnimation, rightAnimation=__playerMeleeRightAnimation,
                                         shapeUp=__playerMeleeUpShape, shapeDown=__playerMeleeDownShape, shapeLeft=__playerMeleeLeftShape, shapeRight=__playerMeleeRightShape, shapeColor=(140, 28, 28), applyAttackAnimAdvancement=.5,
-                                        idleAbilityIcon=__swordAttackIdleImage, hoverAbilityIcon=__swordAttackHoverImage, clickedAbilityIcon=__swordAttackClickImage)
+                                        idleAbilityIcon=__swordAttackIdleImage, hoverAbilityIcon=__swordAttackHoverImage, clickedAbilityIcon=__swordAttackClickImage, abilityAppliedSounds=sounds.sword)
 
 __rangedAttackIdleImage = pygame.image.load(
     "Sprites/Abilities/Player/ranged_icon.png")
@@ -76,7 +77,7 @@ __playerRangedAOEShape = [" F ",
 __playerRangedTestAbility = RangedAbility(damageRange=(1, 3), abilitySpeedRange=(1, 6), missChance=.1,
                                           upAnimation=__playerTestAnimation, downAnimation=__playerTestAnimation, leftAnimation=__playerTestAnimation, rightAnimation=__playerTestAnimation,
                                           zoneShape=__playerRangedZoneShape, AOEShape=__playerRangedAOEShape, zoneColor=(100, 0, 0), AOEColor=(140, 28, 28), applyAttackAnimAdvancement=.5,
-                                          idleAbilityIcon=__rangedAttackIdleImage, hoverAbilityIcon=__rangedAttackHoverImage, clickedAbilityIcon=__rangedAttackClickImage)
+                                          idleAbilityIcon=__rangedAttackIdleImage, hoverAbilityIcon=__rangedAttackHoverImage, clickedAbilityIcon=__rangedAttackClickImage, abilityAppliedSounds=sounds.fireball)
 
 playerProperties = EntityProperties(
     "Player", "The player", 15, [__playerMeleeTestAbility, __playerSideStepTestAbility, __playerRangedTestAbility], __playerIdleAnimation)

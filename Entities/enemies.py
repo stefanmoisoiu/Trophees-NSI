@@ -1,4 +1,5 @@
 import pygame
+import Sound.sounds as sounds
 from Base.animation import Animation
 from Combat.ability import MeleeAbility, MovementAbility, RangedAbility
 from Entities.entity import EntityProperties
@@ -26,7 +27,7 @@ __goblinAttackLeftAnimation = Animation(pygame.image.load(
     "Sprites/Entities/Enemy/goblin_attack_right.png"), loop=False, length=.2, horizontalFrames=7, verticalFrames=1, flip=True, scale=2, topleft=(.333, .333))
 __golbinAttackAbility = MeleeAbility(damageRange=(3, 6), abilitySpeedRange=(0, 6), missChance=.1,
                                      upAnimation=__goblinAttackRightAnimation, downAnimation=__goblinAttackRightAnimation, leftAnimation=__goblinAttackLeftAnimation, rightAnimation=__goblinAttackRightAnimation, applyAttackAnimAdvancement=.7,
-                                     shapeUp=__goblinMeleeUpShape, shapeDown=__goblinMeleeDownShape, shapeLeft=__goblinMeleeLeftShape, shapeRight=__goblinMeleeRightShape, shapeColor=(140, 28, 28))
+                                     shapeUp=__goblinMeleeUpShape, shapeDown=__goblinMeleeDownShape, shapeLeft=__goblinMeleeLeftShape, shapeRight=__goblinMeleeRightShape, shapeColor=(140, 28, 28), abilityAppliedSounds=sounds.blunt)
 __goblinMoveZoneShape = [" F ",
                          "FCF",
                          " F "]
@@ -37,7 +38,7 @@ __goblinMoveLeftAnimation = Animation(pygame.image.load(
     "Sprites/Entities/Enemy/goblin_attack_right.png"), loop=False, length=.2, horizontalFrames=7, verticalFrames=1, flip=True, scale=2, topleft=(.333, .333))
 __golbinMoveAbility = MovementAbility(abilitySpeedRange=(0, 6),
                                       upAnimation=__goblinMoveRightAnimation, downAnimation=__goblinMoveRightAnimation, leftAnimation=__goblinMoveLeftAnimation, rightAnimation=__goblinMoveLeftAnimation,
-                                      zoneShape=__goblinMoveZoneShape, zoneColor=(0, 0, 100), targetColor=(0, 0, 255), applyAttackAnimAdvancement=.7,cooldown=1)
+                                      zoneShape=__goblinMoveZoneShape, zoneColor=(0, 0, 100), targetColor=(0, 0, 255), applyAttackAnimAdvancement=.7, cooldown=1)
 goblinProperties = EntityProperties(
     "Goblin", "A goblin", 1, [__golbinAttackAbility, __golbinMoveAbility], __goblinIdleAnimation)
 #endregion
@@ -55,6 +56,6 @@ __mageTestAbility = RangedAbility(damageRange=(3, 6), abilitySpeedRange=(1, 3), 
                                              "  FFF  ",
                                              "   F   "], zoneColor=(100, 0, 0),
                                   AOEShape=["F"], AOEColor=(255, 0, 0),
-                                  applyAttackAnimAdvancement=.5, cooldown=2,enemyPredictPlayerAbility=False)
+                                  applyAttackAnimAdvancement=.5, cooldown=2, enemyPredictPlayerAbility=False, abilityAppliedSounds=sounds.fireball)
 mageTestProperties = EntityProperties("Mage Test","Test", 5, [__mageTestAbility,__golbinMoveAbility], __mageTestAnim)
 #endregion
