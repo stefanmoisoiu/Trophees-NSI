@@ -3,24 +3,25 @@ import math
 
 from main import *
 
-screen = pygame.display.set_mode((800, 600), pygame.RESIZABLE)
-pygame.display.set_caption("Jeu de role")
+screen = pygame.display.set_mode((800, 600))
+pygame.display.set_caption("Hermes Odyssey")
 
-background = pygame.image.load("Sprites/Menu/bg.jpg")
+background = pygame.image.load("Sprites/Menu/bg.png")
+background = pygame.transform.scale(background, ((background.get_width(), background.get_height())))
+background_rect = screen.get_rect()
 
 button_start = pygame.image.load("Sprites/Menu/start_button.png")
 button_start = pygame.transform.scale(button_start, (400, 150))
 button_start_rect = button_start.get_rect()
-button_start_rect.x = math.ceil(screen.get_width() / 3.33)
-button_start_rect.y = math.ceil(screen.get_width() / 3)
+button_start_rect.center = (screen.get_width() / 2, screen.get_height() / 2)
 
 button_setting = pygame.image.load("Sprites/Menu/setting_button.png")
+button_setting = pygame.transform.scale(button_setting, (button_setting.get_width() * 1.5 , button_setting.get_height() * 1.5 ))
 button_setting_rect = button_setting.get_rect()
-button_setting_rect.x = math.ceil(screen.get_width() / 3)
-button_setting_rect.y = math.ceil(screen.get_width() / 2.9)
+button_setting_rect.center = (screen.get_width() / 2, screen.get_height() / 1.5)
 
 button_arrow = pygame.image.load("Sprites/Menu/button_arrow.png")
-button_arrow = pygame.transform.scale(button_arrow, (400, 150))
+button_arrow = pygame.transform.scale(button_arrow, (button_arrow.get_width() * 1.7 , button_arrow.get_height() * 1.7 ))
 button_arrow_rect = button_arrow.get_rect()
 
 
@@ -30,7 +31,7 @@ running: bool = True
 
 def menu_draw():
     screen.fill((0, 0, 0))
-    screen.blit(background, (0, -200))
+    screen.blit(background, background_rect.topleft)
     screen.blit(button_start, button_start_rect)
     screen.blit(button_setting, button_setting_rect)
     pygame.display.update()
