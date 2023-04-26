@@ -39,7 +39,6 @@ class Slider:
 
         if not self.__bgRect.collidepoint(mousePos[0], mousePos[1]):
             return
-
         if self.__direction == "Up":
             self.__handleRect.center = (self.__handleRect.centerx, mousePos[1])
             percent = -(mousePos[1] - self.__bgRect.bottom) / self.__bgRect.height

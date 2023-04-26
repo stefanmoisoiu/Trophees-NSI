@@ -39,8 +39,8 @@ def menu_draw():
 
 def setting_draw():
     screen.fill((0, 0, 0))
-    screen.blit(background, background_rect.topleft)
-    screen.blit(button_arrow, button_arrow_rect.topleft)
+    screen.blit(background, (0, -200))
+    screen.blit(button_arrow, button_arrow_rect)
     pygame.display.update()
 
 
