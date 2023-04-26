@@ -3,6 +3,7 @@ import pygame
 onQuit: list[callable] = []
 quitting : bool = False
 onLeftClick: list[callable] = []
+whileLeftClick: list[callable] = []
 
 
 def CallCallbacks(callbacks: list[callable]):
@@ -20,3 +21,6 @@ def CheckEvents(events: list[pygame.event.Event]):
             CallCallbacks(onQuit)
         if event.type == pygame.MOUSEBUTTONDOWN:
             CallCallbacks(onLeftClick)
+    
+    if pygame.mouse.get_pressed()[0]:
+        CallCallbacks(whileLeftClick)

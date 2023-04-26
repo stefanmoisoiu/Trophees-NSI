@@ -1,46 +1,87 @@
 import pygame, sys
-from pygame.locals import *
-
-# set window size
-width = 300
-height = 400
-red = (255,0,0)
-black = (0,0,0)
-grey = (217, 219, 186)
-white = (255, 255, 255)
-green = (99, 255, 38)
-blue = (38, 204, 255)
+import Base.events as events
 
 # initilaise pygame
 pygame.init()
-root = pygame.display.set_mode((500,500),1, 16)
-pygame.draw.rect(root, grey, Rect(0, 20, 300, 390)) #BG
-pygame.draw.rect(root, green, [40, 205, 200, 120], 2) #zone temporaire
-pygame.draw.rect(root, red, [150, 215, 34, 100], 1) #zone slider 2
+screen = pygame.display.set_mode((800, 600))
+
+framerate = 60
+clock = pygame.time.Clock()
 
 
-#loop start
-a = 265
-MA_VARIABLE = 30
+class Slider:
+    def __init__(self, position: tuple[int, int], bg: pygame.Surface, handle: pygame.Surface, valueRange: float = (0, 1), direction: str = "Down", onValueChange : list[callable] = None) -> None:
+        self.__position = position
+        self.__bg = bg
+        self.__bgRect = bg.get_rect()
+        self.__bgRect.topleft = position
+        self.__handle = handle
+        self.__handleRect = handle.get_rect()
+        self.__onValueChange = onValueChange
 
-while True:
+        if direction == "Up":
+            self.__handleRect.center = self.__bgRect.midbottom
+        elif direction == "Down":
+            self.__handleRect.center = self.__bgRect.midtop
+        elif direction == "Left":
+            self.__handleRect.center = self.__bgRect.midright
+        elif direction == "Right":
+            self.__handleRect.center = self.__bgRect.midleft
+        
+        self.__valueRange = valueRange
+        self.value = valueRange[0]
+        self.__direction = direction
 
-    if pygame.mouse.get_pressed()[0] != -0:
-        a = pygame.mouse.get_pos()[1] - 0
-        if a < 0:
-            a = 0
+        events.whileLeftClick.append(self.Drag)
 
-    MA_VARIABLE += a
+    def Drag(self):
+        mousePos = pygame.mouse.get_pos()
 
-    pygame.draw.rect(root, blue, Rect(88, 215, 34, 100)) #zone bleu
-    pygame.draw.rect(root, black, Rect(103, 215, 5, 100)) #axe 1
-    pygame.draw.rect(root, red, [88, 215, 34, 100], 1) #zone slider 1
-    pygame.draw.rect(root, black, Rect(90, a, 30, 10)) #rect noir
-    pygame.display.update()
+        if not self.__bgRect.collidepoint(mousePos[0], mousePos[1]):
+            return
+
+        if self.__direction == "Up":
+            self.__handleRect.center = (self.__handleRect.centerx, mousePos[1])
+            percent = -(mousePos[1] - self.__bgRect.bottom) / self.__bgRect.height
+        elif self.__direction == "Down":
+            self.__handleRect.center = (self.__handleRect.centerx, mousePos[1])
+            percent = (mousePos[1] - self.__bgRect.top) / self.__bgRect.height
+        elif self.__direction == "Left":
+            self.__handleRect.center = (mousePos[0], self.__handleRect.centery)
+            percent = -(mousePos[0] - self.__bgRect.right) / self.__bgRect.width
+        elif self.__direction == "Right":
+            self.__handleRect.center = ( mousePos[0], self.__handleRect.centery)
+            percent = (mousePos[0] - self.__bgRect.left) / self.__bgRect.width
+        
+        self.value = (
+            self.__valueRange[1] - self.__valueRange[0]) * percent + self.__valueRange[0]
+        
+        if self.__onValueChange is not None:
+            for callable in self.__onValueChange:
+                callable(self.value)
+
+    def Display(self, screen: pygame.Surface):
+        screen.blit(self.__bg, self.__position)
+        screen.blit(self.__handle, self.__handleRect)
 
 
-# check quit
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
+sliderbg = pygame.image.load("Sprites/slider test.png")
+sliderhandle = pygame.image.load("Sprites/sliderhandle.png")
+slider = Slider((300, 300), sliderbg, sliderhandle)
+
+def gameLoop():
+    running = True
+    '''Boucle du jeu'''
+    while running:
+        deltaTime = clock.tick(framerate) / 1000
+
+        screen.fill((0, 0, 0))
+        slider.Display(screen)
+
+        events.CheckEvents(pygame.event.get())
+        if events.quitting:
+            running = False
+
+        pygame.display.flip()
+
+gameLoop()
