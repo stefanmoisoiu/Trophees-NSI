@@ -1,13 +1,9 @@
-import pygame, sys
+import pygame
 import Base.events as events
-
-# initilaise pygame
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
-
-framerate = 60
 clock = pygame.time.Clock()
-
+framerate = 60
 
 class Slider:
     def __init__(self, position: tuple[int, int], bg: pygame.Surface, handle: pygame.Surface, valueRange: float = (0, 1), direction: str = "Down", onValueChange : list[callable] = None) -> None:
@@ -39,6 +35,7 @@ class Slider:
 
         if not self.__bgRect.collidepoint(mousePos[0], mousePos[1]):
             return
+
         if self.__direction == "Up":
             self.__handleRect.center = (self.__handleRect.centerx, mousePos[1])
             percent = -(mousePos[1] - self.__bgRect.bottom) / self.__bgRect.height

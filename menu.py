@@ -1,5 +1,4 @@
 import pygame
-import math
 
 from main import *
 
@@ -75,7 +74,7 @@ def setting():
         setting_draw()
 
         pygame.display.update()
-
+        
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
