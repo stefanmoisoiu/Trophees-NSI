@@ -7,7 +7,7 @@ whileLeftClick: list[callable] = []
 
 
 def CallCallbacks(callbacks: list[callable]):
-    '''Fonction qui execute les callbacks'''
+    """Fonction qui execute les callbacks"""
     for callback in callbacks:
         callback()
 

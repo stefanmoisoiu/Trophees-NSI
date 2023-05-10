@@ -4,7 +4,7 @@ import Base.gridManager as gridManager
 
 
 class Animation:
-    '''Classe qui permet de gérer une animation, ex: marcher, courir, sauter, etc...'''
+    """Classe qui permet de gérer une animation, ex: marcher, courir, sauter, etc..."""
 
     def __init__(self, spriteSheet: pygame.Surface, length: float = 1, loop: bool = True, horizontalFrames: int = 1, verticalFrames: int = 1, flip: bool = False, scale: float = 1.0, topleft: tuple[int, int] = (0, 0)) -> None:
         self.spriteSheet = spriteSheet

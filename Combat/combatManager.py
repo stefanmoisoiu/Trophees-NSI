@@ -5,12 +5,12 @@ import Effects.textPopup as textPopup
 import Entities.entity as entity
 
 turnsLeft = []
-currentTurn : tuple[Entity,Ability,bool,gridManager.GridShape]
+currentTurn: tuple[Entity, Ability, bool, gridManager.GridShape]
 playingTurns: bool = False
 
 __entitiesInTurn: list[Entity]
 
-__startPlayerPos : tuple[int,int]
+__startPlayerPos: tuple[int, int]
 
 onStartPlayingTurns: callable = []
 onEndPlayingTurns: callable = []
@@ -19,19 +19,19 @@ damagePopupAddedHeight = 20
 
 
 def DebugTurns():
-    '''Affiche les turns en cours'''
+    """Affiche les turns en cours"""
     print("---Debug Turns---")
     invertedTurns = turnsLeft.copy()
     for i in range(len(turnsLeft)):
         print(
-            f"{i+1} : {turnsLeft[i][0].properties.name} is attacking with ability shape:")
+            f"{i + 1} : {turnsLeft[i][0].properties.name} is attacking with ability shape:")
         for line in turnsLeft[i][2].shape:
             print(line)
         print("-----------------")
 
 
 def ShowDamagePopups(damage: int, worldStartPosition: tuple[float, float]) -> None:
-    '''Affiche les popup de dommage'''
+    """Affiche les popup de dommage"""
     worldEndPosition = (
         worldStartPosition[0], worldStartPosition[1] - damagePopupAddedHeight)
 
@@ -51,10 +51,10 @@ def ShowDamagePopups(damage: int, worldStartPosition: tuple[float, float]) -> No
 
 
 def DealDamage(entities: list[Entity], ability: Ability, shape: gridManager.GridShape):
-    '''Execute quand l'attaque est appliquee : peut etre appele pendant l'animation a un avancement donne'''
+    """Execute quand l'attaque est appliquee : peut etre appele pendant l'animation a un avancement donne"""
     if ability.damageRange == (0, 0):
         return
-    
+
     for entity in entities:
         for shapePosition in shape.shapePositions:
             if entity.gridPosition == shapePosition:
@@ -70,26 +70,26 @@ def DealDamage(entities: list[Entity], ability: Ability, shape: gridManager.Grid
                     damageToApply, (entity.rect.centerx, entity.rect.top))
 
 
-def SetupAndPlayTurns(mouseGridPos:tuple[int,int]):
+def SetupAndPlayTurns(mouseGridPos: tuple[int, int]):
     player = entity.GetPlayer()
     global __startPlayerPos
     __startPlayerPos = (player[0].gridPosition[0], player[0].gridPosition[1])
 
     if playingTurns or player[2].currentAbility is None or player[2].ButtonHovered():
         return
-    
+
     entityPositions = [x.gridPosition for x in entity.GetEntities()]
-    
+
     # On calcule l'ability du joueur au debut
 
     playerAbilityDirection = player[2].currentAbility.GetAbilityDirection(
         mouseGridPos, player[0].gridPosition)
-    
+
     playerAbilityShape = player[2].currentAbility.GetPlayerAttackShape(
         player[0].gridPosition, mouseGridPos, entityPositions)
-    
+
     enemyTurns = [x[0] for x in entity.GetEnemies()]
-    
+
     for i in range(len(enemyTurns)):
         enemyAbility = enemyTurns[i].GetEnemyAbility(
             player[0].gridPosition, entityPositions)
@@ -97,15 +97,15 @@ def SetupAndPlayTurns(mouseGridPos:tuple[int,int]):
         if enemyAbility is None:
             enemyTurns.pop(i)
         else:
-            enemyTurns[i] = (enemyTurns[i], enemyAbility,False)
-    
+            enemyTurns[i] = (enemyTurns[i], enemyAbility, False)
+
     PlayTurns((player[0], player[2].currentAbility, True,
-              playerAbilityDirection, playerAbilityShape), enemyTurns)
+               playerAbilityDirection, playerAbilityShape), enemyTurns)
 
 
-def PlayTurns(playerTurn: tuple[Entity, Ability,bool,str,gridManager.GridShape],
-              enemyTurns: list[tuple[Entity,bool, Ability]]):
-    '''Execute quand le joueur a fini de choisir son attaque'''
+def PlayTurns(playerTurn: tuple[Entity, Ability, bool, str, gridManager.GridShape],
+              enemyTurns: list[tuple[Entity, bool, Ability]]):
+    """Execute quand le joueur a fini de choisir son attaque"""
 
     global turnsLeft, playingTurns, __entitiesInTurn
 
@@ -124,16 +124,16 @@ def PlayTurns(playerTurn: tuple[Entity, Ability,bool,str,gridManager.GridShape],
     PlayNextTurn()
 
 
-def ApplyTurnDamage(abilityShape : gridManager.GridShape, abilityDir : str):
-    '''Execute quand l'attaque est appliquee : peut etre appele pendant l'animation a un avancement donne'''
+def ApplyTurnDamage(abilityShape: gridManager.GridShape, abilityDir: str):
+    """Execute quand l'attaque est appliquee : peut etre appele pendant l'animation a un avancement donne"""
 
     DealDamage(__entitiesInTurn, turnsLeft[0][1], abilityShape)
     turnsLeft[0][1].OnAbilityAttackApplied(
-        turnsLeft[0][0],abilityShape, abilityDir)
+        turnsLeft[0][0], abilityShape, abilityDir)
 
 
 def FinishedTurnAnimation(abilityShape: gridManager.GridShape, abilityDir: str):
-    '''Execute quand l'animation de l'entite est finie'''
+    """Execute quand l'animation de l'entite est finie"""
 
     print("Finished animation. Next Turn")
     turnsLeft[0][0].animationManager.PlayAnimation(
@@ -141,7 +141,7 @@ def FinishedTurnAnimation(abilityShape: gridManager.GridShape, abilityDir: str):
 
     turnsLeft[0][1].OnAbilityAnimationEnded(
         turnsLeft[0][0], abilityShape, abilityDir)
-    
+
     # __entitiesInTurn[0] = turnsLeft[0][0]
     turnsLeft.pop(0)
 
@@ -149,7 +149,7 @@ def FinishedTurnAnimation(abilityShape: gridManager.GridShape, abilityDir: str):
 
 
 def StopPlayingTurns():
-    '''Arrete de jouer les tours et execute les callbacks'''
+    """Arrete de jouer les tours et execute les callbacks"""
     global playingTurns, currentTurnShape
 
     playingTurns = False
@@ -160,14 +160,14 @@ def StopPlayingTurns():
 
 
 def PlayNextTurn():
-    '''Joue le tour de l'entite suivante'''
+    """Joue le tour de l'entite suivante"""
 
     global turnsLeft, currentTurn
 
     if len(turnsLeft) == 0:
         StopPlayingTurns()
         return
-    
+
     abilityShape = None
     abilityDir = None
 
@@ -178,31 +178,32 @@ def PlayNextTurn():
         abilityDir = turnsLeft[0][3]
         abilityShape = turnsLeft[0][4]
     else:
-        #Ennemi
+        # Ennemi
 
         if turnsLeft[0][1].enemyPredictPlayerAbility:
             playerPosition = player[0].gridPosition
         else:
             playerPosition = __startPlayerPos
-        
+
         abilityDir = turnsLeft[0][1].GetAbilityDirection(
             playerPosition, turnsLeft[0][0].gridPosition)
-        
+
         abilityShape = turnsLeft[0][1].GetEnemyAttackShape(
             turnsLeft[0][0].gridPosition, playerPosition, [x.gridPosition for x in entity.GetEntities()])
 
-    currentTurn = (turnsLeft[0][0], turnsLeft[0][1], turnsLeft[0][2],abilityShape)
+    currentTurn = (turnsLeft[0][0], turnsLeft[0][1], turnsLeft[0][2], abilityShape)
 
     turnsLeft[0][0].animationManager.PlayAnimation(
-        turnsLeft[0][1].GetAnimation(abilityDir), [(lambda: ApplyTurnDamage(abilityShape, abilityDir), turnsLeft[0][1].applyAttackAnimAdvancement),
-                                                    (lambda: FinishedTurnAnimation(abilityShape, abilityDir), 1)])
+        turnsLeft[0][1].GetAnimation(abilityDir),
+        [(lambda: ApplyTurnDamage(abilityShape, abilityDir), turnsLeft[0][1].applyAttackAnimAdvancement),
+         (lambda: FinishedTurnAnimation(abilityShape, abilityDir), 1)])
 
     turnsLeft[0][1].OnAbilityAnimationStarted(
         turnsLeft[0][0], abilityShape, abilityDir)
 
 
 def AddTurnShapes():
-    '''Ajoute les shapes de l'entite suivante'''
+    """Ajoute les shapes de l'entite suivante"""
     if not playingTurns:
         return
     if currentTurn is not None:
@@ -213,10 +214,11 @@ def ResetWaitingForPopupEnd():
     global waitingForPopupEnd
     waitingForPopupEnd = False
 
-def TryRemoveEnemyFromTurn(enemy : Entity):
+
+def TryRemoveEnemyFromTurn(enemy: Entity):
     if not playingTurns:
         return
-    
+
     print("TryRemoveEnemyFromTurn")
     if enemy in __entitiesInTurn:
         print("found dead enemy")
@@ -229,4 +231,3 @@ def TryRemoveEnemyFromTurn(enemy : Entity):
     if currentTurn is not None and currentTurn[0] == enemy:
         print("dead enemy's turn was this one")
         PlayNextTurn()
-

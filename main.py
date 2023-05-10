@@ -10,6 +10,7 @@ import Entities.enemies as enemies
 import Entities.playerClasses as playerClasses
 
 import Sound.audio as audio
+
 audio.PlayMusic("Sound/Music/botw.mp3")
 
 # region Window Setup
@@ -23,7 +24,7 @@ clock = pygame.time.Clock()
 # endregion
 
 player = entity.CreatePlayer(
-    playerClasses.playerProperties,(4,4))
+    playerClasses.playerProperties, (4, 4))
 
 events.onLeftClick.append(
     lambda: combatManager.SetupAndPlayTurns(mouseGridPos))
@@ -47,9 +48,10 @@ mageTest = entity.CreateEnemy(enemies.mageTestProperties, (8, 5), EnemyDied)
 # Tuple de Entity, Healthbar
 enemyList = [mageTest, goblin1, goblin2, goblin3, goblin4]
 
+
 # region Game Loop
 def gameLoop(running: bool):
-    '''Boucle du jeu'''
+    """Boucle du jeu"""
     while running:
         entity.SetEntities([x[0] for x in enemyList] + [player[0]])
         entity.SetEnemies(enemyList)
@@ -66,19 +68,19 @@ def gameLoop(running: bool):
         events.CheckEvents(pygame.event.get())
         if events.quitting:
             running = False
-        
+
         # endregion
 
-    # region Entities
+        # region Entities
         for enemy in enemyList:
             enemy[0].Update(deltaTime)
-        
+
         player[0].Update(deltaTime)
         player[2].Update(mouseGridPos, [x[0].gridPosition for x in enemyList])
-        
+
         combatManager.AddTurnShapes()
         gridManager.DrawCells(screen)
-        
+
         for enemy in enemyList:
             enemy[0].Display(screen)
             enemy[1].Display(screen, enemy[0].rect.center)
@@ -86,20 +88,17 @@ def gameLoop(running: bool):
         player[0].Display(screen)
         player[1].Display(screen, player[0].rect.center)
         player[2].Display(screen)
-    # endregion
+        # endregion
 
         for popup in textPopup.activePopups:
             if not popup.alive:
                 textPopup.activePopups.remove(popup)
             else:
                 popup.Update(deltaTime)
-        
+
         for popup in textPopup.activePopups:
             popup.Display(screen)
-        
 
         pygame.display.flip()
-
-
 
 # endregion

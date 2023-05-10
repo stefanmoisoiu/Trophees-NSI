@@ -5,7 +5,7 @@ from Base.timer import Timer
 
 
 class TextPopupAdditionalProperties:
-    '''A class to display a text on the screen'''
+    """A class to display a text on the screen"""
     def __init__(self, font: pygame.font.Font, color: tuple[int, int, int] = (255, 255, 255), startFadingAt: float = 0.5, duration: int = 1):
         self.color = color
         self.startFadingAt = startFadingAt
@@ -15,7 +15,7 @@ class TextPopupAdditionalProperties:
 
 
 class TextPopup:
-    '''A class to display a text on the screen'''
+    """A class to display a text on the screen"""
     def __init__(self, text: str, startPosition: tuple[int, int], endPosition: tuple[int, int], additionalProperties: TextPopupAdditionalProperties, onPopupEnd: callable = None):
         self.text = text
         self.startPosition = startPosition
@@ -34,11 +34,11 @@ class TextPopup:
         self.alive = True
 
     def Die(self):
-        '''Fonction qui gère la mort du joueur'''
+        """Fonction qui gère la mort du joueur"""
         self.alive = False
 
     def SurfaceByAdvancement(self, baseSurface: pygame.Surface, advancement: float) -> pygame.Surface:
-        '''Fonction qui met à jour la surface de l'affichage'''
+        """Fonction qui met à jour la surface de l'affichage"""
         if advancement < self.additionalProperties.startFadingAt:
             return baseSurface
 
@@ -50,7 +50,7 @@ class TextPopup:
         return transparentSurface
 
     def Update(self, deltaTime: float):
-        '''Fonction qui met à jour le joueur'''
+        """Fonction qui met à jour le joueur"""
         if not self.alive:
             return
 

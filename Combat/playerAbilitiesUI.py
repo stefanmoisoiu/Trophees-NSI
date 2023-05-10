@@ -6,7 +6,7 @@ import Combat.combatManager as combatManager
 
 
 class PlayerAbilitiesUI:
-    '''Classe de l'UI du joueur'''
+    """Classe de l'UI du joueur"""
     def __init__(self, playerEntity, buttonScale: int = 1):
         self.playerEntity = playerEntity
         self.buttonScale = buttonScale
@@ -21,26 +21,26 @@ class PlayerAbilitiesUI:
         combatManager.onEndPlayingTurns.append(self.OnStopPlayingTurns)
 
     def OnStartPlayingTurns(self):
-        '''Mise à jour de l'UI'''
+        """Mise à jour de l'UI"""
         self.showButtons = False
 
     def OnStopPlayingTurns(self):
-        '''Mise à jour de l'UI'''
+        """Mise à jour de l'UI"""
         self.showButtons = True
 
     def OnAbilitiesChange(self):
-        '''Mise à jour de l'UI'''
+        """Mise à jour de l'UI"""
         currentAbilityInNewList: bool = self.currentAbility in self.playerEntity.properties.abilities
         if not currentAbilityInNewList:
             self.currentAbility = None
 
     def OnAbilityButtonClick(self, ability: Ability):
-        '''Clique sur un bouton de l'UI'''
+        """Clique sur un bouton de l'UI"""
         print("Ability button clicked.")
         self.currentAbility = ability
 
     def UpdateButtonsPosition(self, screen: pygame.Surface):
-        '''Mise à jour de la position des boutons'''
+        """Mise à jour de la position des boutons"""
 
         availableWidth = screen.get_width() - (self.leftRightMargin * 2)
         if len(self.buttons) > 1:
@@ -55,7 +55,7 @@ class PlayerAbilitiesUI:
                                         buttonSize[0] / 2, screen.get_height() - self.bottomMargin - buttonSize[1])
 
     def GenerateAbilityButtons(self):
-        '''Crée les boutons de l'UI'''
+        """Crée les boutons de l'UI"""
         self.buttons.clear()
 
         for i in range(len(self.playerEntity.properties.abilities)):
@@ -67,7 +67,7 @@ class PlayerAbilitiesUI:
                 self.OnAbilityButtonClick, self.playerEntity.properties.abilities[i]))
 
     def ButtonHovered(self):
-        '''Retourne True si le bouton est enfoncé, False sinon'''
+        """Retourne True si le bouton est enfoncé, False sinon"""
         if self.showButtons:
             for button in self.buttons:
                 if button.MouseHovered():
@@ -75,14 +75,14 @@ class PlayerAbilitiesUI:
         return False
 
     def Display(self, screen: pygame.Surface):
-        '''Affiche l'UI'''
+        """Affiche l'UI"""
         if self.showButtons:
             for i in range(len(self.buttons)):
                 self.UpdateButtonsPosition(screen)
                 self.buttons[i].Display(screen)
 
     def Update(self, mouseGridPos: tuple[int, int], entityPositions: list[tuple[int, int]]):
-        '''Mise à jour de l'UI'''
+        """Mise à jour de l'UI"""
         if self.showButtons:
             for button in self.buttons:
                 button.Update()
@@ -91,7 +91,7 @@ class PlayerAbilitiesUI:
             self.AddPreviewAbilityShape(mouseGridPos, entityPositions)
 
     def AddPreviewAbilityShape(self, mouseGridPos: tuple[int, int], entityPositions: list[tuple[int, int]]):
-        '''Ajoute un preview d'attaque à la souris'''
+        """Ajoute un preview d'attaque à la souris"""
         if self.currentAbility is None:
             return
         for attackPreviewShape in self.currentAbility.GetPlayerPreviewShapes(

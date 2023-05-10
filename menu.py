@@ -6,7 +6,7 @@ screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("Hermes Odyssey")
 
 background = pygame.image.load("Sprites/Menu/bg.png")
-background = pygame.transform.scale(background, ((background.get_width(), background.get_height())))
+background = pygame.transform.scale(background, (background.get_width(), background.get_height()))
 background_rect = screen.get_rect()
 
 button_start = pygame.image.load("Sprites/Menu/start_button.png")
@@ -15,14 +15,14 @@ button_start_rect = button_start.get_rect()
 button_start_rect.center = (screen.get_width() / 2, screen.get_height() / 2)
 
 button_setting = pygame.image.load("Sprites/Menu/setting_button.png")
-button_setting = pygame.transform.scale(button_setting, (button_setting.get_width() * 1.5 , button_setting.get_height() * 1.5 ))
+button_setting = pygame.transform.scale(button_setting,
+                                        (button_setting.get_width() * 1.5, button_setting.get_height() * 1.5))
 button_setting_rect = button_setting.get_rect()
 button_setting_rect.center = (screen.get_width() / 2, screen.get_height() / 1.5)
 
 button_arrow = pygame.image.load("Sprites/Menu/button_arrow.png")
-button_arrow = pygame.transform.scale(button_arrow, (button_arrow.get_width() * 1.7 , button_arrow.get_height() * 1.7 ))
+button_arrow = pygame.transform.scale(button_arrow, (button_arrow.get_width() * 1.7, button_arrow.get_height() * 1.7))
 button_arrow_rect = button_arrow.get_rect()
-
 
 state: str = "Menu"
 running: bool = True
@@ -44,7 +44,7 @@ def setting_draw():
 
 
 def menu():
-    '''Fonction qui gère le menu'''
+    """Fonction qui gère le menu"""
     global state
     while state == "Menu":
 
@@ -67,7 +67,7 @@ def menu():
 
 
 def setting():
-    '''Fonction qui gère le setting'''
+    """Fonction qui gère le setting"""
     global state
     while state == "Setting":
 
